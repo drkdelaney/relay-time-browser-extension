@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="options.css">
+</head>
+
+<body>
+    <div class="container">
+        <h1 class="title">Relay Time Options</h1>
+        <div class="section">
+            <h3 class="sectionTitle">Tasks</h3>
+            <table id="task-table" class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">Ratio</th>
+                    </tr>
+                </thead>
+                <tbody id="tasks"></tbody>
+                <tbody id="add-more">
+                    <tr>
+                        <td colspan="2" class="new-task-row">
+                            <div class="form-inline">
+                                <div class="form-group input-group-sm mb-2">
+                                    <label for="staticEmail2" class="sr-only">New Task</label>
+                                    <input type="text" readonly class="form-control-plaintext" value="New Task Name:">
+                                </div>
+                                <div class="form-group input-group-sm mx-sm-3 mb-2">
+                                    <label for="inputPassword2" class="sr-only">Name</label>
+                                    <input type="text" class="form-control" id="inputNewTaskName" placeholder="name">
+                                </div>
+                                <button id="saveTaskName" class="btn btn-secondary mb-2 btn-sm">Add</button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="section">
+            <h3 class="sectionTitle">Defaults</h3>
+            <table id="default-table" class="table">
+                <thead>
+                    <tr id="default-days-row"></tr>
+                </thead>
+                <tbody>
+                    <tr id="default-value-row"></tr>
+                    <tr id="default-checked-row"></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="section">
+            <button id="saveOptions" class="btn btn-primary">Save</button>
+            <button id="resetOptions" class="btn btn-danger">Reset</button>
+        </div>
+    </div>
+</body>
+<script src="options.js"></script>
+
+</html>

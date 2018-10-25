@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <style>
+        input {
+            text-align: center;
+            width: 36px !important;
+        }
+        .table th {
+            border-top: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid mb-2">
+        <table class="table">
+            <thead>
+                <tr id="day-row">
+                    <th>Mon</th>
+                    <th>Tue</th>
+                    <th>Wed</th>
+                    <th>Thu</th>
+                    <th>Fri</th>
+                    <th>Sat</th>
+                    <th>Sun</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr id="value-row">
+                    <td><input class="form-control form-control-sm hours" type="text"></td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="container d-flex justify-content-between">
+            <h6>Total: <span id="total-time"></span></h2>
+            <button id="done-button" type="button" class="btn btn-primary btn-sm">Done</button>
+        </div>
+    </div>
+    <script src="popup.js"></script>
+</body>
+
+</html>

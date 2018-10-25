@@ -1,0 +1,27 @@
+{
+    "name": "Relay Time",
+    "version": "1.0",
+    "description": "Enters your time in the relay time sheet",
+    "permissions": ["declarativeContent", "storage"],
+    "background": {
+        "scripts": ["background.js"],
+        "persistent": false
+    },
+    "options_page": "options.html",
+    "page_action": {
+        "default_popup": "popup.html",
+        "default_icon": {
+          "16": "images/relay_time_icon16.png",
+          "32": "images/relay_time_icon32.png",
+          "48": "images/relay_time_icon48.png",
+          "128": "images/relay_time_icon128.png"
+        }
+      },
+      "icons": {
+        "16": "images/relay_time16.png",
+        "32": "images/relay_time32.png",
+        "48": "images/relay_time48.png",
+        "128": "images/relay_time128.png"
+      },
+    "manifest_version": 2
+}
