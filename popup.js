@@ -41,14 +41,20 @@ function populateDefaultDays(defaultDays = []) {
 
 function getTimeSheetHours(func) {
     const hours = document.querySelectorAll('.hours');
-    chrome.storage.sync.get('tasks', function(data) {
-        const { tasks } = data;
-        if (Array.isArray(tasks)) {
+    chrome.storage.sync.get(['tasks', 'defaultDays'], function(data) {
+        const { tasks, defaultDays } = data;
+        if (Array.isArray(tasks), Array.isArray(defaultDays)) {
             const tableData = [];
             for (const task of tasks) {
                 const row = [];
-                for (let hourElement of hours) {
-                    row.push(task.ratio * hourElement.value);
+                for (let i = 0, j = 0; i < defaultDays.length; i++) {
+                    if (defaultDays[i].checked) {
+                        row.push(task.ratio * hours[j].value);
+                        j++;
+                    } else {
+                        row.push(0);
+                    }
+                    
                 }
                 tableData.push(row.join('\\t'));
             }
