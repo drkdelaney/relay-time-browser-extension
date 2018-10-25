@@ -37,13 +37,27 @@ function populateDefaultDays(defaultDays = []) {
         },
         0
     );
+    // set calbacks to calc totals
+    const hourElements = document.querySelectorAll('.hours');
+    for (const element of hourElements) {
+        element.onkeyup = hourChange;
+    }
+}
+
+function hourChange() {
+    const hoursEle = document.querySelectorAll('.hours');
+    let total = 0
+    for (const ele of hoursEle) {
+        total += Number(ele.value);
+    }
+    document.getElementById('total-time').innerText = total;
 }
 
 function getTimeSheetHours(func) {
     const hours = document.querySelectorAll('.hours');
     chrome.storage.sync.get(['tasks', 'defaultDays'], function(data) {
         const { tasks, defaultDays } = data;
-        if (Array.isArray(tasks), Array.isArray(defaultDays)) {
+        if ((Array.isArray(tasks), Array.isArray(defaultDays))) {
             const tableData = [];
             for (const task of tasks) {
                 const row = [];
@@ -54,7 +68,6 @@ function getTimeSheetHours(func) {
                     } else {
                         row.push(0);
                     }
-                    
                 }
                 tableData.push(row.join('\\t'));
             }
@@ -67,12 +80,17 @@ function getTimeSheetHours(func) {
 
 function generateTimeSheetHours() {
     getTimeSheetHours(timeSheetHours => {
-        chrome.tabs.query({active: true}, function(tabs) {
+        chrome.tabs.query({ active: true }, function(tabs) {
             // Send a request to the content script.
             const tab = tabs.find(e => e.title === 'Edit Time Sheet');
-            chrome.tabs.sendMessage(tab.id, { action: 'setHours', timeSheetHours }, {}, function(response) {
-                console.log(response);
-            });
+            chrome.tabs.sendMessage(
+                tab.id,
+                { action: 'setHours', timeSheetHours },
+                {},
+                function(response) {
+                    console.log(response);
+                }
+            );
         });
     });
 }
