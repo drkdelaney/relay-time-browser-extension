@@ -1,6 +1,6 @@
 {
     "name": "Relay Time",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "description": "Enters your time in the relay time sheet",
     "permissions": ["declarativeContent", "storage", "activeTab"],
     "background": {
@@ -10,7 +10,7 @@
     "options_page": "options.html",
     "content_scripts": [
         {
-            "matches": ["<all_urls>"],
+            "matches": ["https://ppm-nike.saas.hpe.com/*"],
             "js": ["content.js"]
         }
     ],
