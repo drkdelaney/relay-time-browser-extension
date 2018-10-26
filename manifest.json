@@ -29,5 +29,6 @@
         "48": "images/relay_time_icon48.png",
         "128": "images/relay_time_icon128.png"
     },
+    "homepage_url": "https://github.com/derekedelaney/relay-time-chrome-extension",
     "manifest_version": 2
 }
