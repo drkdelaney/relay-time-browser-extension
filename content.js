@@ -4,7 +4,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             setTimeSheetHours(message.timeSheetHours);
             console.log(message.timeSheetHours)
         }
-        sendResponse('SENDIT');
+        sendResponse();
     }
 });
 

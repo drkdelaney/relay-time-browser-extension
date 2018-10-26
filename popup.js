@@ -46,7 +46,7 @@ function populateDefaultDays(defaultDays = []) {
 
 function hourChange() {
     const hoursEle = document.querySelectorAll('.hours');
-    let total = 0
+    let total = 0;
     for (const ele of hoursEle) {
         total += Number(ele.value);
     }
@@ -87,8 +87,8 @@ function generateTimeSheetHours() {
                 tab.id,
                 { action: 'setHours', timeSheetHours },
                 {},
-                function(response) {
-                    console.log(response);
+                function() {
+                    window.close();
                 }
             );
         });
