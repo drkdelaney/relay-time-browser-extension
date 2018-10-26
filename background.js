@@ -1,3 +1,6 @@
+const TIME_SHEET_REMINDER = 'TIME_SHEET_REMINDER';
+const TIME_SHEET_REMINDER_TEMP = 'TIME_SHEET_REMINDER_TEMP';
+
 chrome.runtime.onInstalled.addListener(function() {
     chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
         chrome.declarativeContent.onPageChanged.addRules([
@@ -16,7 +19,7 @@ chrome.runtime.onInstalled.addListener(function() {
 });
 
 chrome.alarms.onAlarm.addListener(alarm => {
-    showNotification();
+    showNotification(alarm.name === TIME_SHEET_REMINDER_TEMP);
 });
 
 chrome.notifications.onClicked.addListener(() => {
@@ -25,13 +28,19 @@ chrome.notifications.onClicked.addListener(() => {
 
 chrome.notifications.onButtonClicked.addListener(
     (notificationId, buttonIndex) => {
-        [dismissNotification, goToRelay][buttonIndex](notificationId);
+        [goToRelay, dismissNotification][buttonIndex](notificationId);
     }
 );
 
 function createWeeklyAlarm(day, hour) {
-    chrome.alarms.create('time_sheet_reminder', {
+    chrome.alarms.create(TIME_SHEET_REMINDER, {
         periodInMinutes: 10080,
+        when: nextOccurrenceOfDayAndTime(day, hour, 0).getTime(),
+    });
+}
+
+function createTempAlarm(day, hour) {
+    chrome.alarms.create(TIME_SHEET_REMINDER_TEMP, {
         when: nextOccurrenceOfDayAndTime(day, hour, 0).getTime(),
     });
 }
@@ -42,20 +51,27 @@ function goToRelay() {
 
 function dismissNotification(notificationId) {
     chrome.notifications.clear(notificationId);
+    createTempAlarm(5, 15);
+    
 }
 
-function showNotification() {
-    chrome.notifications.create(
-        'reminder',
-        {
+function showNotification(isLater) {
+    const notificationOptions = {
             type: 'basic',
             iconUrl: 'images/relay_time_icon128.png',
             title: 'Relay Time!',
             message: "Don't forget to submit your time sheet!",
             requireInteraction: true,
-            buttons: [{ title: "I'll do it later" }, { title: "I'll do it now" }],
-        },
-        function(notificationId) {}
+            buttons: isLater ? [{ title: "I'll do it now" }] : [{ title: "I'll do it now" }, { title: "I'll do it later" }],
+        };
+    chrome.notifications.create(
+        'reminder',
+        notificationOptions,
+        function(notificationId) {
+            if (isLater) {
+                chrome.alarms.clear(TIME_SHEET_REMINDER_TEMP);
+            }
+        }
     );
 }
 
