@@ -1,6 +1,6 @@
 # Relay Time Chrome Extension
 
-[Download Extension](relay-chromw-extension.crx)
+[Download Extension](https://github.com/derekedelaney/relay-time-chrome-extension/raw/master/relay-chrome-extension.crx)
 
 ## Manual install
 - Open Chrome extension [settings](chrome://extensions/)
