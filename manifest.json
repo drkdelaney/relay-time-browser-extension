@@ -2,7 +2,7 @@
     "name": "Relay Time",
     "version": "1.0.2",
     "description": "Enters your time in the relay time sheet",
-    "permissions": ["declarativeContent", "storage", "activeTab"],
+    "permissions": ["declarativeContent", "storage", "activeTab", "alarms", "notifications"],
     "background": {
         "scripts": ["background.js"],
         "persistent": false
