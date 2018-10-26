@@ -1,6 +1,6 @@
 {
     "name": "Relay Time",
-    "version": "1.0.2",
+    "version": "1.0.3",
     "description": "Enters your time in the relay time sheet",
     "permissions": ["declarativeContent", "storage", "activeTab", "alarms", "notifications"],
     "background": {
