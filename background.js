@@ -1,5 +1,5 @@
 const TIME_SHEET_REMINDER = 'TIME_SHEET_REMINDER';
-const TIME_SHEET_REMINDER_TEMP = 'TIME_SHEET_REMINDER_TEMP';
+const TIME_SHEET_REMINDER_LATER = 'TIME_SHEET_REMINDER_LATER';
 
 chrome.runtime.onInstalled.addListener(function() {
     chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
@@ -19,7 +19,7 @@ chrome.runtime.onInstalled.addListener(function() {
 });
 
 chrome.alarms.onAlarm.addListener(alarm => {
-    showNotification(alarm.name === TIME_SHEET_REMINDER_TEMP);
+    showNotification(alarm.name === TIME_SHEET_REMINDER_LATER);
 });
 
 chrome.notifications.onClicked.addListener(() => {
@@ -40,7 +40,7 @@ function createWeeklyAlarm(day, hour) {
 }
 
 function createTempAlarm(day, hour) {
-    chrome.alarms.create(TIME_SHEET_REMINDER_TEMP, {
+    chrome.alarms.create(TIME_SHEET_REMINDER_LATER, {
         when: nextOccurrenceOfDayAndTime(day, hour, 0).getTime(),
     });
 }
@@ -69,7 +69,7 @@ function showNotification(isLater) {
         notificationOptions,
         function(notificationId) {
             if (isLater) {
-                chrome.alarms.clear(TIME_SHEET_REMINDER_TEMP);
+                chrome.alarms.clear(TIME_SHEET_REMINDER_LATER);
             }
         }
     );
