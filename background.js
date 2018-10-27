@@ -15,7 +15,14 @@ chrome.runtime.onInstalled.addListener(function() {
         ]);
     });
     chrome.runtime.openOptionsPage();
-    createWeeklyAlarm(5, 11);
+    chrome.storage.sync.get('notificationTime', function({ notificationTime }) {
+        if (notificationTime) {
+            const [hour, minute] = notificationTime.split(':');
+            createWeeklyAlarm(5, hour, minute);
+        } else {
+            createWeeklyAlarm(5, 11);
+        }
+    });
 });
 
 chrome.alarms.onAlarm.addListener(alarm => {
@@ -32,10 +39,20 @@ chrome.notifications.onButtonClicked.addListener(
     }
 );
 
-function createWeeklyAlarm(day, hour) {
+chrome.storage.onChanged.addListener(({ notifications, notificationTime }) => {
+    if (notifications && notificationTime) {
+        const [hour, minute] = notificationTime.split(':');
+        createWeeklyAlarm(5, hour, minute);
+    } else {
+        chrome.alarms.clear(TIME_SHEET_REMINDER);
+        chrome.alarms.clear(TIME_SHEET_REMINDER_LATER);
+    }
+});
+
+function createWeeklyAlarm(day, hour, minute = 0) {
     chrome.alarms.create(TIME_SHEET_REMINDER, {
         periodInMinutes: 10080,
-        when: nextOccurrenceOfDayAndTime(day, hour, 0).getTime(),
+        when: nextOccurrenceOfDayAndTime(day, hour, minute).getTime(),
     });
 }
 

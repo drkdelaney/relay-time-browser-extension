@@ -2,8 +2,10 @@
 <html>
 
 <head>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link href="/open-iconic/font/css/open-iconic-bootstrap.css" rel="stylesheet">
+    <link rel="stylesheet" href="bootstrap.min.css">
     <link rel="stylesheet" href="options.css">
+    <link rel="stylesheet" href="slider.css">
 </head>
 
 <body>
@@ -14,7 +16,7 @@
             <table id="task-table" class="table mb-0">
                 <thead>
                     <tr>
-                        <th scope="col">Name</th>
+                        <th scope="col">Activity</th>
                         <th scope="col">Ratio</th>
                     </tr>
                 </thead>
@@ -23,15 +25,15 @@
                     <tr>
                         <td colspan="2" class="new-task-row">
                             <div class="form-inline">
-                                <div class="form-group input-group-sm mb-2">
-                                    <label for="staticEmail2" class="sr-only">New Task</label>
-                                    <input type="text" readonly class="form-control-plaintext" value="New Task Name:">
+                                <div class="form-group input-group-sm">
+                                    <input type="text" readonly class="form-control-plaintext" id="taskName" value="New Activity:">
                                 </div>
-                                <div class="form-group input-group-sm mx-sm-3 mb-2">
-                                    <label for="inputPassword2" class="sr-only">Name</label>
-                                    <input type="text" class="form-control" id="inputNewTaskName" placeholder="name">
+                                <div class="input-group input-group-sm">
+                                    <input type="text" class="form-control" id="inputNewTaskName" placeholder="Activity">
+                                    <div class="input-group-append">
+                                        <button id="saveTaskName" class="btn btn-secondary btn-sm">Add</button>
+                                    </div>
                                 </div>
-                                <button id="saveTaskName" class="btn btn-secondary mb-2 btn-sm">Add</button>
                             </div>
                         </td>
                     </tr>
@@ -50,6 +52,21 @@
                     <tr id="default-checked-row"></tr>
                 </tbody>
             </table>
+        </div>
+        <div class="section">
+            <h3 class="sectionTitle">Notifications</h3>
+            <div class="d-inline-flex align-items-center">
+                <div class="mr-4">
+                    <label class="switch mb-0">
+                        <input type="checkbox" id="notification-switch">
+                        <span class="slider round"></span>
+                        <span class="on-text">On</span>
+                        <span class="off-text">Off</span>
+                    </label>
+                </div>
+                <input type="text" readonly class="form-control-plaintext notification" value="Every Friday At">
+                <input type="time" class="form-control notification" name="timePicker" id="notification-time">
+            </div>
         </div>
         <div class="section">
             <button id="saveOptions" class="btn btn-primary">Save</button>

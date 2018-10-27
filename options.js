@@ -168,6 +168,7 @@ saveOptions.onclick = () => {
             saveDefaultDays(updatedDefaults);
         }
     });
+    saveNotificationSettings();
 };
 
 /* RESET OPTIONS */
@@ -180,3 +181,38 @@ resetOptions.onclick = () => {
         populateDefaultDays(defaultDefaults);
     });
 };
+
+/* NOTIFICATIONS */
+const notificationSwitch = document.getElementById('notification-switch');
+const notificationTime = document.getElementById('notification-time');
+
+chrome.storage.sync.get('notifications', function(data) {
+    notificationSwitch.checked = !!data.notifications;
+    showHideNotification(!!data.notifications);
+});
+
+chrome.storage.sync.get('notificationTime', function(data) {
+    if (!data.notificationTime) {
+        notificationTime.value = "11:00";
+    } else {
+        notificationTime.value = data.notificationTime;
+    }
+});
+
+notificationSwitch.onchange = function ({ target: { checked } }) {
+    showHideNotification(checked);
+}
+
+function saveNotificationSettings() {
+    const checked = notificationSwitch.checked;
+    const time = notificationTime.value;
+    chrome.storage.sync.set({ notifications: checked, notificationTime: time });
+}
+
+function showHideNotification(bool) {
+    if (bool) {
+        document.querySelectorAll('.notification').forEach(e => e.classList.remove("hidden"));
+    } else {
+        document.querySelectorAll('.notification').forEach(e => e.classList.add("hidden"));
+    }
+}
