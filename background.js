@@ -1,5 +1,6 @@
 const TIME_SHEET_REMINDER = 'TIME_SHEET_REMINDER';
 const TIME_SHEET_REMINDER_LATER = 'TIME_SHEET_REMINDER_LATER';
+const NOTIFICATION_DAY = 5;
 
 chrome.runtime.onInstalled.addListener(function() {
     chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
@@ -15,12 +16,12 @@ chrome.runtime.onInstalled.addListener(function() {
         ]);
     });
     chrome.runtime.openOptionsPage();
-    chrome.storage.sync.get('notificationTime', function({ notificationTime }) {
+    chrome.storage.sync.get(['notificationTime'], function({ notificationTime }) {
         if (notificationTime) {
             const [hour, minute] = notificationTime.split(':');
-            createWeeklyAlarm(5, hour, minute);
+            createWeeklyAlarm(NOTIFICATION_DAY, hour, minute);
         } else {
-            createWeeklyAlarm(5, 11);
+            createWeeklyAlarm(NOTIFICATION_DAY, 11);
         }
     });
 });
@@ -39,13 +40,11 @@ chrome.notifications.onButtonClicked.addListener(
     }
 );
 
-chrome.storage.onChanged.addListener(({ notifications, notificationTime }) => {
-    if (notifications && notificationTime) {
-        const [hour, minute] = notificationTime.split(':');
-        createWeeklyAlarm(5, hour, minute);
-    } else {
-        chrome.alarms.clear(TIME_SHEET_REMINDER);
-        chrome.alarms.clear(TIME_SHEET_REMINDER_LATER);
+chrome.storage.onChanged.addListener(({ notificationTime }) => {
+    chrome.alarms.clearAll();
+    if (notificationTime.newValue) {
+        const [hour, minute] = notificationTime.newValue.split(':');
+        createWeeklyAlarm(NOTIFICATION_DAY, hour, minute);
     }
 });
 
@@ -56,9 +55,9 @@ function createWeeklyAlarm(day, hour, minute = 0) {
     });
 }
 
-function createTempAlarm(day, hour) {
+function createTempAlarm(jsTime) {
     chrome.alarms.create(TIME_SHEET_REMINDER_LATER, {
-        when: nextOccurrenceOfDayAndTime(day, hour, 0).getTime(),
+        when: jsTime,
     });
 }
 
@@ -68,7 +67,10 @@ function goToRelay() {
 
 function dismissNotification(notificationId) {
     chrome.notifications.clear(notificationId);
-    createTempAlarm(5, 15);
+    chrome.storage.sync.get('reminderTime', function({ reminderTime }) {
+        const jsTime = Date.now() + Number(reminderTime);
+        createTempAlarm(jsTime);
+    });
     
 }
 

@@ -10,19 +10,19 @@ const defaultDefaults = [
     { day: 'Sun', value: '0', checked: true },
 ];
 
-chrome.storage.sync.get('tasks', function(data) {
-    if (Array.isArray(data.tasks)) {
-        generateTaskRows(data.tasks);
+chrome.storage.sync.get(['tasks', 'defaultDays'], function({
+    tasks,
+    defaultDays,
+}) {
+    if (Array.isArray(tasks)) {
+        generateTaskRows(tasks);
     } else {
         chrome.storage.sync.set({ tasks: defaultTasks }, function() {
             generateTaskRows(defaultTasks);
         });
     }
-});
-
-chrome.storage.sync.get('defaultDays', function(data) {
-    if (Array.isArray(data.defaultDays)) {
-        populateDefaultDays(data.defaultDays);
+    if (Array.isArray(defaultDays)) {
+        populateDefaultDays(defaultDays);
     } else {
         chrome.storage.sync.set({ defaultDays: defaultDefaults }, function() {
             populateDefaultDays(defaultDefaults);
@@ -128,7 +128,7 @@ function populateDefaultDays(defaults) {
 const inputNewTaskName = document.getElementById('inputNewTaskName');
 const saveTaskName = document.getElementById('saveTaskName');
 saveTaskName.onclick = addTaskName;
-inputNewTaskName.onkeydown = (e) => {
+inputNewTaskName.onkeydown = e => {
     if (e.keyCode == 13) {
         addTaskName();
     }
@@ -184,35 +184,50 @@ resetOptions.onclick = () => {
 
 /* NOTIFICATIONS */
 const notificationSwitch = document.getElementById('notification-switch');
-const notificationTime = document.getElementById('notification-time');
+const notificationTimeElement = document.getElementById('notification-time');
+const reminderTimeElement = document.getElementById('reminder-time');
 
-chrome.storage.sync.get('notifications', function(data) {
-    notificationSwitch.checked = !!data.notifications;
-    showHideNotification(!!data.notifications);
-});
-
-chrome.storage.sync.get('notificationTime', function(data) {
-    if (!data.notificationTime) {
-        notificationTime.value = "11:00";
-    } else {
-        notificationTime.value = data.notificationTime;
+chrome.storage.sync.get(
+    ['notifications', 'notificationTime', 'reminderTime'],
+    function({ notifications, notificationTime, reminderTime }) {
+        notificationSwitch.checked = !!notifications;
+        showHideNotification(!!notifications);
+        if (!notificationTime) {
+            notificationTimeElement.value = '11:00';
+        } else {
+            notificationTimeElement.value = notificationTime;
+        }
+        if (!reminderTime) {
+            reminderTimeElement.value = '14400000';
+        } else {
+            reminderTimeElement.value = reminderTime;
+        }
     }
-});
+);
 
-notificationSwitch.onchange = function ({ target: { checked } }) {
+notificationSwitch.onchange = function({ target: { checked } }) {
     showHideNotification(checked);
-}
+};
 
 function saveNotificationSettings() {
     const checked = notificationSwitch.checked;
-    const time = notificationTime.value;
-    chrome.storage.sync.set({ notifications: checked, notificationTime: time });
+    const time = notificationTimeElement.value;
+    const reminder = reminderTimeElement.value;
+    chrome.storage.sync.set({
+        notifications: checked,
+        notificationTime: time,
+        reminderTime: reminder,
+    });
 }
 
 function showHideNotification(bool) {
     if (bool) {
-        document.querySelectorAll('.notification').forEach(e => e.classList.remove("hidden"));
+        document
+            .querySelectorAll('.notification')
+            .forEach(e => e.classList.remove('hidden'));
     } else {
-        document.querySelectorAll('.notification').forEach(e => e.classList.add("hidden"));
+        document
+            .querySelectorAll('.notification')
+            .forEach(e => e.classList.add('hidden'));
     }
 }

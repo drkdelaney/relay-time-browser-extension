@@ -2,7 +2,6 @@
 <html>
 
 <head>
-    <link href="/open-iconic/font/css/open-iconic-bootstrap.css" rel="stylesheet">
     <link rel="stylesheet" href="bootstrap.min.css">
     <link rel="stylesheet" href="options.css">
     <link rel="stylesheet" href="slider.css">
@@ -56,7 +55,7 @@
         <div class="section">
             <h3 class="sectionTitle">Notifications</h3>
             <div class="d-inline-flex align-items-center">
-                <div class="mr-4">
+                <div>
                     <label class="switch mb-0">
                         <input type="checkbox" id="notification-switch">
                         <span class="slider round"></span>
@@ -64,8 +63,16 @@
                         <span class="off-text">Off</span>
                     </label>
                 </div>
-                <input type="text" readonly class="form-control-plaintext notification" value="Every Friday At">
+                <input type="text" readonly class="form-control-plaintext text-center notification" value="Every Friday At">
                 <input type="time" class="form-control notification" name="timePicker" id="notification-time">
+                <input type="text" readonly class="form-control-plaintext text-center notification" value="Reminder in">
+                <select class="form-control" id="reminder-time">
+                    <option value="900000">15 minutes</option>
+                    <option value="1800000">30 minutes</option>
+                    <option value="3600000">1 hours</option>
+                    <option value="7200000">2 hours</option>
+                    <option value="14400000">4 hours</option>
+                </select>
             </div>
         </div>
         <div class="section">
