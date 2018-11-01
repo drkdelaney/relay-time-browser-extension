@@ -1,17 +1,16 @@
 # Relay Time Chrome Extension
 
-Mac: [Download Extension](https://github.com/derekedelaney/relay-time-chrome-extension/raw/master/relay-chrome-extension.crx)
-
-Windows: [Google's keeping you safe!](https://blog.chromium.org/2015/05/continuing-to-protect-chrome-users-from.html)
+[Install Extenstion](https://chrome.google.com/webstore/detail/relay-time/ominbkhiagfojcchnadpanlaimdhiolh?hl=en-US)
 
 ## Manual install
 **Mac**
+- [Download Extension](https://github.com/derekedelaney/relay-time-chrome-extension/raw/master/relay-chrome-extension.crx)
 - Open Chrome extension settings (chrome://extensions/)
 - Toggle developer mode in the top right corner
 - Drag the extension file to the extension page
 
 **Windows**
-- Until google approves this for the chrome store, download the repo as a zip file and extract it
+- Download the repo as a zip file and extract it
 - Open Chrome extension settings (chrome://extensions/)
 - Toggle developer mode in the top right corner
 - Click on the button, `Load unpacked` and select the chrome extension folder.
