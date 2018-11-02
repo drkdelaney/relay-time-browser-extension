@@ -40,11 +40,14 @@ chrome.notifications.onButtonClicked.addListener(
     }
 );
 
-chrome.storage.onChanged.addListener(({ notificationTime }) => {
-    chrome.alarms.clearAll();
+chrome.storage.onChanged.addListener(({ notificationTime = {}, notifications = {} }) => {
     if (notificationTime.newValue) {
+        chrome.alarms.clearAll();
         const [hour, minute] = notificationTime.newValue.split(':');
         createWeeklyAlarm(NOTIFICATION_DAY, hour, minute);
+    }
+    if (notifications.newValue === false) {
+        chrome.alarms.clearAll();
     }
 });
 
