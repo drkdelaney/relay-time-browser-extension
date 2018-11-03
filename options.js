@@ -50,6 +50,13 @@ chrome.storage.sync.get(
     }
 );
 
+const successAlert = document.getElementById('success-alert');
+const errorAlert = document.getElementById('error-alert');
+successAlert.hidden = true;
+errorAlert.hidden = true;
+successAlert.getElementsByTagName('button')[0].onclick = () => { successAlert.hidden = true; };
+errorAlert.getElementsByTagName('button')[0].onclick = () => { errorAlert.hidden = true; };
+
 /* GENERATE AND POPULATE HTML FUNCTIONS */
 function generateAll(
     tasks,
@@ -248,9 +255,11 @@ saveOptions.onclick = () => {
             }
         }
         if (errors.length) {
-            //display error message
+            errorAlert.hidden = false;
+            const errorList = document.getElementById('error-list');
+            errorList.innerText = `${errors.join(', ')}`
         } else {
-            // display success message
+            successAlert.hidden = false;
         }
     });
 };

@@ -65,3 +65,12 @@ table {
 .hidden {
     visibility: hidden;
 }
+
+/* overide alert */
+.alert-danger {
+    border: none;
+}
+
+.alert {
+    border-radius: 0;
+}

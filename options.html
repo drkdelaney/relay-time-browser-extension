@@ -8,6 +8,19 @@
 </head>
 
 <body>
+    <div id="error-alert" class="alert alert-danger alert-dismissible fade show fixed-top" role="alert">
+        <strong>Save Failed!</strong> You have the following error(s):
+        <span id="error-list"></span>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div id="success-alert" class="alert alert-success alert-dismissible fade show fixed-top" role="alert">
+        <strong>Save Success!</strong> You have successfully saved the options.
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
     <div class="container">
         <h1 class="title">Relay Time Options</h1>
         <div class="section">
@@ -64,9 +77,11 @@
                         <span class="off-text">Off</span>
                     </label>
                 </div>
-                <input type="text" readonly class="form-control-plaintext text-right notification mr-2" value="Every Friday At" tabindex="-1">
+                <input type="text" readonly class="form-control-plaintext text-right notification mr-2" value="Every Friday At"
+                    tabindex="-1">
                 <input type="time" class="form-control notification" name="timePicker" id="notification-time">
-                <input type="text" readonly class="form-control-plaintext text-right notification mr-2" value="Reminder in" tabindex="-1">
+                <input type="text" readonly class="form-control-plaintext text-right notification mr-2" value="Reminder in"
+                    tabindex="-1">
                 <select class="form-control notification" id="reminder-time">
                     <option value="900000">15 minutes</option>
                     <option value="1800000">30 minutes</option>
