@@ -253,7 +253,7 @@ saveOptions.onclick = () => {
             } else {
                 errors.push('An unknown error has occurred.');
             }
-        }
+        }                               
         if (errors.length) {
             errorAlert.hidden = false;
             const errorList = document.getElementById('error-list');
