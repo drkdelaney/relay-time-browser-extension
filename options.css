@@ -45,15 +45,11 @@ table {
     color: #666;
 }
 
-td {
+.task-names {
     text-transform: capitalize;
 }
 
-.table td {
-    vertical-align: middle;
-}
-
-#default-table th {
+.default-days {
     text-align: center;
 }
 
@@ -66,9 +62,15 @@ td {
     margin-left: 26px;
 }
 
-#tasks input[type="text"].form-control {
-    padding: .25rem .5rem;
-    font-size: .875rem;
-    line-height: 1.5;
-    border-radius: .2rem;
+.hidden {
+    visibility: hidden;
+}
+
+/* overide alert */
+.alert-danger {
+    border: none;
+}
+
+.alert {
+    border-radius: 0;
 }
