@@ -34,6 +34,10 @@ Example
 
 This section is where you set the defaults for the Relay Time popup. Use the input boxes to set the hours you would typically work. This is initially set up to be 8 hrs Mon - Fri. The checkboxes allow you to show/hide the day of the week in the Relay Time popup.
 
+**Notifications**
+
+This section is where you set notifications and reminders.
+
 **DON'T FORGET TO SAVE THE CHANGES WHEN YOU ARE DONE!**
 
 ## Relay Time Popup
