@@ -16,7 +16,9 @@ chrome.runtime.onInstalled.addListener(function() {
         ]);
     });
     chrome.runtime.openOptionsPage();
-    chrome.storage.sync.get(['notificationTime'], function({ notificationTime }) {
+    chrome.storage.sync.get(['notificationTime'], function({
+        notificationTime,
+    }) {
         if (notificationTime) {
             const [hour, minute] = notificationTime.split(':');
             createWeeklyAlarm(NOTIFICATION_DAY, hour, minute);
@@ -27,7 +29,7 @@ chrome.runtime.onInstalled.addListener(function() {
 });
 
 chrome.alarms.onAlarm.addListener(alarm => {
-    showNotification(alarm.name === TIME_SHEET_REMINDER_LATER);
+    showNotification();
 });
 
 chrome.notifications.onClicked.addListener(() => {
@@ -40,16 +42,24 @@ chrome.notifications.onButtonClicked.addListener(
     }
 );
 
-chrome.storage.onChanged.addListener(({ notificationTime = {}, notifications = {} }) => {
-    if (notificationTime.newValue) {
-        chrome.alarms.clearAll();
-        const [hour, minute] = notificationTime.newValue.split(':');
-        createWeeklyAlarm(NOTIFICATION_DAY, hour, minute);
+chrome.notifications.onClosed.addListener(
+    (notificationId, byUser) => {
+        chrome.notifications.clear(notificationId);
     }
-    if (notifications.newValue === false) {
-        chrome.alarms.clearAll();
+);
+
+chrome.storage.onChanged.addListener(
+    ({ notificationTime = {}, notifications = {} }) => {
+        if (notificationTime.newValue) {
+            chrome.alarms.clearAll();
+            const [hour, minute] = notificationTime.newValue.split(':');
+            createWeeklyAlarm(NOTIFICATION_DAY, hour, minute);
+        }
+        if (notifications.newValue === false) {
+            chrome.alarms.clearAll();
+        }
     }
-});
+);
 
 function createWeeklyAlarm(day, hour, minute = 0) {
     chrome.alarms.create(TIME_SHEET_REMINDER, {
@@ -74,27 +84,18 @@ function dismissNotification(notificationId) {
         const jsTime = Date.now() + Number(reminderTime);
         createTempAlarm(jsTime);
     });
-    
 }
 
 function showNotification(isLater) {
     const notificationOptions = {
-            type: 'basic',
-            iconUrl: 'images/relay_time_icon128.png',
-            title: 'Relay Time!',
-            message: "Don't forget to submit your time sheet!",
-            requireInteraction: true,
-            buttons: isLater ? [{ title: "I'll do it now" }] : [{ title: "I'll do it now" }, { title: "I'll do it later" }],
-        };
-    chrome.notifications.create(
-        'reminder',
-        notificationOptions,
-        function(notificationId) {
-            if (isLater) {
-                chrome.alarms.clear(TIME_SHEET_REMINDER_LATER);
-            }
-        }
-    );
+        type: 'basic',
+        iconUrl: 'images/relay_time_icon128.png',
+        title: 'Relay Time!',
+        message: "Don't forget to submit your time sheet!",
+        requireInteraction: true,
+        buttons: [{ title: "I'll do it now" }, { title: "I'll do it later" }],
+    };
+    chrome.notifications.create('reminder', notificationOptions);
 }
 
 function nextOccurrenceOfDayAndTime(dayOfWeek, hour, minute) {

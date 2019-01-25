@@ -54,8 +54,12 @@ const successAlert = document.getElementById('success-alert');
 const errorAlert = document.getElementById('error-alert');
 successAlert.hidden = true;
 errorAlert.hidden = true;
-successAlert.getElementsByTagName('button')[0].onclick = () => { successAlert.hidden = true; };
-errorAlert.getElementsByTagName('button')[0].onclick = () => { errorAlert.hidden = true; };
+successAlert.getElementsByTagName('button')[0].onclick = () => {
+    successAlert.hidden = true;
+};
+errorAlert.getElementsByTagName('button')[0].onclick = () => {
+    errorAlert.hidden = true;
+};
 
 /* GENERATE AND POPULATE HTML FUNCTIONS */
 function generateAll(
@@ -68,6 +72,7 @@ function generateAll(
     generateTaskRows(tasks);
     populateDefaultDays(defaultDays);
     setNotificationArea(notifications, notificationTime, reminderTime);
+    calculateTotals();
 }
 
 function generateTaskRows(tasks) {
@@ -82,13 +87,18 @@ function generateTaskRows(tasks) {
                         }" tabindex="-1">
                     </td>
                     <td>
-                        <input type="text" class="form-control ratio-values" value="${
+                        <input type="number" class="form-control ratio-values" value="${
                             obj.ratio
-                        }">
+                        }" min="0" max="1" step="0.1">
                     </td>
                 </tr>`
         )
         .join('\n');
+    const elements = tasksTable.querySelectorAll('.ratio-values');
+    for (let i = 0; i < elements.length; i++) {
+        const element = elements[i];
+        element.onchange = calculateTotals;
+    }
 }
 
 function populateDefaultDays(defaults) {
@@ -157,8 +167,9 @@ function addTaskRow(taskName) {
             <input type="text" readonly class="form-control-plaintext task-names" value="${taskName}" tabindex="-1">
         </td>
         <td>
-            <input type="text" class="form-control ratio-values" value="0">
+            <input type="number" class="form-control ratio-values" value="0.0">
         </td>`;
+    row.querySelectorAll('input')[1].onchange = calculateTotals;
     tasksTable.appendChild(row);
 }
 
@@ -178,6 +189,17 @@ function showHideNotification(bool) {
             .querySelectorAll('.notification')
             .forEach(e => e.classList.add('hidden'));
     }
+}
+
+function calculateTotals() {
+    const ratioValues = document.querySelectorAll('.ratio-values');
+    const totalElement = document.getElementById('inputTaskTotal');
+    let total = 0;
+    for (let i = 0; i < ratioValues.length; i++) {
+        const element = ratioValues[i];
+        total += Number(element.value);
+    }
+    totalElement.value = parseFloat(Math.round(total * 100) / 100).toFixed(1);
 }
 
 /* SAVE OPTIONS */
@@ -253,11 +275,11 @@ saveOptions.onclick = () => {
             } else {
                 errors.push('An unknown error has occurred.');
             }
-        }                               
+        }
         if (errors.length) {
             errorAlert.hidden = false;
             const errorList = document.getElementById('error-list');
-            errorList.innerText = `${errors.join(', ')}`
+            errorList.innerText = `${errors.join(', ')}`;
         } else {
             successAlert.hidden = false;
         }
