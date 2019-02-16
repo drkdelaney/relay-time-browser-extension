@@ -3,20 +3,16 @@
 
 <head>
     <link rel="stylesheet" href="bootstrap.min.css">
-    <link rel="stylesheet" href="options.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
     <link rel="stylesheet" href="slider.css">
+
+    <link rel="stylesheet" href="options.css">
 </head>
 
 <body>
     <div id="error-alert" class="alert alert-danger alert-dismissible fade show fixed-top" role="alert">
         <strong>Save Failed!</strong> You have the following error(s):
         <span id="error-list"></span>
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-        </button>
-    </div>
-    <div id="success-alert" class="alert alert-success alert-dismissible fade show fixed-top" role="alert">
-        <strong>Save Success!</strong> You have successfully saved the options.
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
         </button>
@@ -28,13 +24,16 @@
             <table id="task-table" class="table mb-0">
                 <thead>
                     <tr>
+                        <th scope="col"></th>
                         <th scope="col">Activity</th>
                         <th scope="col">Ratio (1.0)</th>
+                        <th scope="col"></th>
                     </tr>
                 </thead>
                 <tbody id="tasks"></tbody>
                 <tbody id="add-more">
                     <tr>
+                        <td/>
                         <td class="task-total-row">
                             <input type="text" readonly class="form-control-plaintext" id="taskTotal" value="Total"
                                     tabindex="-1">
@@ -42,8 +41,10 @@
                         <td>
                             <input type="text" class="form-control" id="inputTaskTotal" value="0.0" disabled>
                         </td>
+                        <td/>
                     </tr>
                     <tr>
+                        <td/>
                         <td colspan="2" class="new-task-row">
                             <div class="form-inline">
                                 <div class="form-group input-group-sm">
@@ -58,6 +59,7 @@
                                 </div>
                             </div>
                         </td>
+                        <td/>
                     </tr>
                 </tbody>
             </table>
@@ -106,6 +108,7 @@
         </div>
     </div>
 </body>
+<script src="storage-helper.js"></script>
 <script src="options.js"></script>
 
 </html>

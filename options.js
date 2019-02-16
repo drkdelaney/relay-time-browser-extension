@@ -7,56 +7,47 @@ const defaultDefaults = [
     { day: 'Thu', value: '8', checked: true },
     { day: 'Fri', value: '8', checked: true },
     { day: 'Sat', value: '0', checked: true },
-    { day: 'Sun', value: '0', checked: true },
+    { day: 'Sun', value: '0', checked: true }
 ];
 const defaultNotifications = true;
 const defaultNotificationTime = '11:00';
 const defaultReminderTime = 14400000; // 4 hours
 
 /* init load */
-chrome.storage.sync.get(
-    [
-        'tasks',
-        'defaultDays',
-        'notifications',
-        'notificationTime',
-        'reminderTime',
-    ],
-    function({
+get([
+    'tasks',
+    'defaultDays',
+    'notifications',
+    'notificationTime',
+    'reminderTime'
+]).then(
+    ({
         tasks = defaultTasks,
         defaultDays = defaultDefaults,
         notifications = defaultNotifications,
         notificationTime = defaultNotificationTime,
-        reminderTime = defaultReminderTime,
-    }) {
-        chrome.storage.sync.set(
-            {
+        reminderTime = defaultReminderTime
+    }) => {
+        save({
+            tasks,
+            defaultDays,
+            notifications,
+            notificationTime,
+            reminderTime
+        }).then(() => {
+            generateAll(
                 tasks,
                 defaultDays,
                 notifications,
                 notificationTime,
-                reminderTime,
-            },
-            function() {
-                generateAll(
-                    tasks,
-                    defaultDays,
-                    notifications,
-                    notificationTime,
-                    reminderTime
-                );
-            }
-        );
+                reminderTime
+            );
+        });
     }
 );
 
-const successAlert = document.getElementById('success-alert');
 const errorAlert = document.getElementById('error-alert');
-successAlert.hidden = true;
 errorAlert.hidden = true;
-successAlert.getElementsByTagName('button')[0].onclick = () => {
-    successAlert.hidden = true;
-};
 errorAlert.getElementsByTagName('button')[0].onclick = () => {
     errorAlert.hidden = true;
 };
@@ -79,25 +70,44 @@ function generateTaskRows(tasks) {
     const tasksTable = document.getElementById('tasks');
     tasksTable.innerHTML = tasks
         .map(
-            obj =>
-                `<tr>
+            (obj, i) =>
+                `<tr draggable="true" class="dragon-drop">
+                    <td class="delete-row-button"><i class="fas fa-minus-circle fa-md"></i></td>
                     <td>
-                        <input type="text" readonly class="form-control-plaintext task-names" value="${
-                            obj.name
-                        }" tabindex="-1">
+                    <input type="text" readonly class="form-control-plaintext task-names" value="${
+                        obj.name
+                    }" tabindex="-1">
                     </td>
                     <td>
-                        <input type="number" class="form-control ratio-values" value="${
-                            obj.ratio
-                        }" min="0" max="1" step="0.1">
+                    <input type="number" class="form-control ratio-values" value="${
+                        obj.ratio
+                    }" min="0" max="1" step="0.1">
                     </td>
+                    <td class="grip-row-button"><i class="fas fa-grip-lines"></i></td>
                 </tr>`
         )
         .join('\n');
+
+    const dragonContainers = document.getElementsByClassName('dragon-drop');
+    for (let i = 0; i < dragonContainers.length; i++) {
+        const container = dragonContainers[i];
+        container.addEventListener('dragover', dragover.bind(this, i));
+        container.addEventListener('dragstart', dragstart.bind(this, i));
+        container.addEventListener('dragleave', dragleave.bind(this, i));
+        container.addEventListener('drop', drop.bind(this, i));
+    }
+
     const elements = tasksTable.querySelectorAll('.ratio-values');
     for (let i = 0; i < elements.length; i++) {
         const element = elements[i];
         element.onchange = calculateTotals;
+        element.onblur = saveRatio.bind(this, i);
+    }
+
+    const deleteRowButtons = tasksTable.querySelectorAll('.delete-row-button');
+    for (let i = 0; i < deleteRowButtons.length; i++) {
+        const deleteRowButton = deleteRowButtons[i];
+        deleteRowButton.onclick = handleDeleteTask.bind(this, i, tasks[i]);
     }
 }
 
@@ -145,6 +155,77 @@ function setNotificationArea(notifications, notificationTime, reminderTime) {
     reminderTimeElement.value = reminderTime;
 }
 
+/* HELPER EVENT FUNCTIONS */
+function dragover(i, e) {
+    e.preventDefault();
+    const dragonContainers = document.getElementsByClassName('dragon-drop');
+    dragonContainers[i].className = 'dragon-drop dragover';
+}
+
+function dragstart(i, e) {
+    e.dataTransfer.setData('dragIndex', i);
+}
+
+function dragleave(i, e) {
+    const dragonContainers = document.getElementsByClassName('dragon-drop');
+    dragonContainers[i].className = 'dragon-drop';
+}
+
+function drop(dropIndex, e) {
+    const dragonContainers = document.getElementsByClassName('dragon-drop');
+    dragonContainers[dropIndex].className = 'dragon-drop';
+
+    const dragIndex = e.dataTransfer.getData('dragIndex');
+
+    update('tasks', ({ tasks }) => {
+        const updateTasks = [...tasks];
+        let temp = updateTasks[dragIndex];
+        updateTasks.splice(dragIndex, 1);
+        updateTasks.splice(dropIndex, 0, temp);
+        
+        return updateTasks;
+    }).then(({ tasks }) => {
+        generateTaskRows(tasks);
+    });
+}
+
+function calculateTotals() {
+    const ratioValues = document.querySelectorAll('.ratio-values');
+    const totalElement = document.getElementById('inputTaskTotal');
+    let total = 0;
+    for (let i = 0; i < ratioValues.length; i++) {
+        const element = ratioValues[i];
+        total += Number(element.value);
+    }
+    totalElement.value = parseFloat(Math.round(total * 100) / 100).toFixed(2);
+}
+
+function saveRatio(index, e) {
+    const ratio = e.target.value;
+    update('tasks', ({ tasks }) => {
+        return tasks.map((task, i) => {
+            if (i === index) {
+                return { ...task, ratio };
+            }
+            return task;
+        });
+    });
+}
+
+function handleDeleteTask(index, task) {
+    const shouldDelete = confirm(
+        `Are you sure you want to delete ${task.name.toUpperCase()}?`
+    );
+    if (shouldDelete) {
+        update('tasks', ({ tasks }) => {
+            return tasks.filter((task, i) => i !== index);
+        }).then(({ tasks }) => {
+            generateTaskRows(tasks);
+            calculateTotals();
+        });
+    }
+}
+
 /* CREATE NEW TASK NAME */
 const inputNewTaskName = document.getElementById('inputNewTaskName');
 const saveTaskName = document.getElementById('saveTaskName');
@@ -154,23 +235,15 @@ inputNewTaskName.onkeydown = e => {
         addTaskName();
     }
 };
-function addTaskName() {
-    const task = inputNewTaskName.value.trim().toLowerCase();
-    addTaskRow(task);
-    inputNewTaskName.value = '';
-}
 
-function addTaskRow(taskName) {
-    const tasksTable = document.getElementById('tasks');
-    const row = document.createElement('tr');
-    row.innerHTML = `<td>
-            <input type="text" readonly class="form-control-plaintext task-names" value="${taskName}" tabindex="-1">
-        </td>
-        <td>
-            <input type="number" class="form-control ratio-values" value="0.0">
-        </td>`;
-    row.querySelectorAll('input')[1].onchange = calculateTotals;
-    tasksTable.appendChild(row);
+function addTaskName() {
+    const taskName = inputNewTaskName.value.trim().toLowerCase();
+    update('tasks', ({ tasks }) => {
+        return [...tasks, { name: taskName, ratio: 0.0 }];
+    }).then(({ tasks }) => {
+        generateTaskRows(tasks);
+    });
+    inputNewTaskName.value = '';
 }
 
 /* TOGGLE NOTIFICATIONS */
@@ -189,17 +262,6 @@ function showHideNotification(bool) {
             .querySelectorAll('.notification')
             .forEach(e => e.classList.add('hidden'));
     }
-}
-
-function calculateTotals() {
-    const ratioValues = document.querySelectorAll('.ratio-values');
-    const totalElement = document.getElementById('inputTaskTotal');
-    let total = 0;
-    for (let i = 0; i < ratioValues.length; i++) {
-        const element = ratioValues[i];
-        total += Number(element.value);
-    }
-    totalElement.value = parseFloat(Math.round(total * 100) / 100).toFixed(1);
 }
 
 /* SAVE OPTIONS */
@@ -227,12 +289,12 @@ saveOptions.onclick = () => {
         for (let i = 0; i < taskNames.length; i++) {
             tasks.push({
                 name: taskNames[i].value,
-                ratio: taskRatios[i].value,
+                ratio: taskRatios[i].value
             });
         }
         options = {
             ...options,
-            tasks,
+            tasks
         };
     }
 
@@ -248,12 +310,12 @@ saveOptions.onclick = () => {
             defaultDays.push({
                 day: defaultDaysElements[i].value,
                 value: defaultValue[i].value,
-                checked: defaultChecked[i].checked,
+                checked: defaultChecked[i].checked
             });
         }
         options = {
             ...options,
-            defaultDays,
+            defaultDays
         };
     }
 
@@ -265,26 +327,15 @@ saveOptions.onclick = () => {
         ...options,
         notifications,
         notificationTime,
-        reminderTime,
+        reminderTime
     };
-
-    chrome.storage.sync.set(options, () => {
-        if (chrome.runtime.lastError) {
-            if (chrome.runtime.lastError.message) {
-                errors.push(message);
-            } else {
-                errors.push('An unknown error has occurred.');
-            }
-        }
-        if (errors.length) {
-            errorAlert.hidden = false;
-            const errorList = document.getElementById('error-list');
-            errorList.innerText = `${errors.join(', ')}`;
-        } else {
-            successAlert.hidden = false;
-        }
-    });
 };
+
+function showErrorAlert(error) {
+    errorAlert.hidden = false;
+    const errorList = document.getElementById('error-list');
+    errorList.innerText = error.message;
+}
 
 /* RESET OPTIONS */
 const resetOptions = document.getElementById('resetOptions');
