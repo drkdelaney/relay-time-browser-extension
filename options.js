@@ -139,6 +139,15 @@ function populateDefaultDays(defaults) {
                 }></td>`
         )
         .join('\n');
+
+    const defaultDaysElements = document.querySelectorAll('.default-days');
+    const defaultValue = document.querySelectorAll('.default-value');
+    const defaultChecked = document.querySelectorAll('.default-checked');
+
+    for (let i = 0; i < defaultDaysElements.length; i++) {
+        defaultValue[i].onblur = handleDefaultValueBlur.bind(this, i);
+        defaultChecked[i].onchange = handleDefaultCheckedChanged.bind(this, i);
+    }
 }
 
 function setNotificationArea(notifications, notificationTime, reminderTime) {
@@ -182,11 +191,13 @@ function drop(dropIndex, e) {
         let temp = updateTasks[dragIndex];
         updateTasks.splice(dragIndex, 1);
         updateTasks.splice(dropIndex, 0, temp);
-        
+
         return updateTasks;
-    }).then(({ tasks }) => {
-        generateTaskRows(tasks);
-    });
+    })
+        .then(({ tasks }) => {
+            generateTaskRows(tasks);
+        })
+        .catch(showErrorAlert);
 }
 
 function calculateTotals() {
@@ -209,7 +220,7 @@ function saveRatio(index, e) {
             }
             return task;
         });
-    });
+    }).catch(showErrorAlert);
 }
 
 function handleDeleteTask(index, task) {
@@ -219,11 +230,37 @@ function handleDeleteTask(index, task) {
     if (shouldDelete) {
         update('tasks', ({ tasks }) => {
             return tasks.filter((task, i) => i !== index);
-        }).then(({ tasks }) => {
-            generateTaskRows(tasks);
-            calculateTotals();
-        });
+        })
+            .then(({ tasks }) => {
+                generateTaskRows(tasks);
+                calculateTotals();
+            })
+            .catch(showErrorAlert);
     }
+}
+
+function handleDefaultValueBlur(index, e) {
+    const value = e.target.value;
+    update('defaultDays', ({ defaultDays }) => {
+        return defaultDays.map((defaultDay, i) => {
+            if (i === index) {
+                return { ...defaultDay, value };
+            }
+            return defaultDay;
+        });
+    }).catch(showErrorAlert);
+}
+
+function handleDefaultCheckedChanged(index, e) {
+    const checked = e.target.checked;
+    update('defaultDays', ({ defaultDays }) => {
+        return defaultDays.map((defaultDay, i) => {
+            if (i === index) {
+                return { ...defaultDay, checked };
+            }
+            return defaultDay;
+        });
+    }).catch(showErrorAlert);
 }
 
 /* CREATE NEW TASK NAME */
@@ -240,9 +277,11 @@ function addTaskName() {
     const taskName = inputNewTaskName.value.trim().toLowerCase();
     update('tasks', ({ tasks }) => {
         return [...tasks, { name: taskName, ratio: 0.0 }];
-    }).then(({ tasks }) => {
-        generateTaskRows(tasks);
-    });
+    })
+        .then(({ tasks }) => {
+            generateTaskRows(tasks);
+        })
+        .catch(showErrorAlert);
     inputNewTaskName.value = '';
 }
 
@@ -251,8 +290,20 @@ const notificationSwitch = document.getElementById('notification-switch');
 notificationSwitch.onchange = function({ target: { checked } }) {
     showHideNotification(checked);
 };
+const notificationTimeElement = document.getElementById('notification-time');
+notificationTimeElement.onblur = function(e) {
+    const notificationTime = e.target.value;
+    save({ notificationTime }).catch(showErrorAlert);
+};
+const reminderTimeElement = document.getElementById('reminder-time');
+reminderTimeElement.onchange = function(e) {
+    const reminderTime = e.target.value;
+    save({ reminderTime }).catch(showErrorAlert);
+};
 
 function showHideNotification(bool) {
+    save({ notifications: bool }).catch(showErrorAlert);
+
     if (bool) {
         document
             .querySelectorAll('.notification')
@@ -264,87 +315,8 @@ function showHideNotification(bool) {
     }
 }
 
-/* SAVE OPTIONS */
-const saveOptions = document.getElementById('saveOptions');
-saveOptions.onclick = () => {
-    const taskNames = document.querySelectorAll('.task-names');
-    const taskRatios = document.querySelectorAll('.ratio-values');
-    const defaultDaysElements = document.querySelectorAll('.default-days');
-    const defaultValue = document.querySelectorAll('.default-value');
-    const defaultChecked = document.querySelectorAll('.default-checked');
-    const notificationSwitch = document.getElementById('notification-switch');
-    const notificationTimeElement = document.getElementById(
-        'notification-time'
-    );
-    const reminderTimeElement = document.getElementById('reminder-time');
-
-    const errors = [];
-    let options = {};
-
-    // tasks and ratios
-    if (taskNames.length !== taskRatios.length) {
-        errors.push('Invalid HTML for Tasks and Ratios');
-    } else {
-        const tasks = [];
-        for (let i = 0; i < taskNames.length; i++) {
-            tasks.push({
-                name: taskNames[i].value,
-                ratio: taskRatios[i].value
-            });
-        }
-        options = {
-            ...options,
-            tasks
-        };
-    }
-
-    // default days
-    if (
-        defaultDaysElements.length !== defaultValue.length &&
-        defaultValue.length !== defaultChecked.length
-    ) {
-        errors.push('Invalid HTML for Default Days');
-    } else {
-        const defaultDays = [];
-        for (let i = 0; i < defaultDaysElements.length; i++) {
-            defaultDays.push({
-                day: defaultDaysElements[i].value,
-                value: defaultValue[i].value,
-                checked: defaultChecked[i].checked
-            });
-        }
-        options = {
-            ...options,
-            defaultDays
-        };
-    }
-
-    // notifications
-    const notifications = notificationSwitch.checked;
-    const notificationTime = notificationTimeElement.value;
-    const reminderTime = reminderTimeElement.value;
-    options = {
-        ...options,
-        notifications,
-        notificationTime,
-        reminderTime
-    };
-};
-
 function showErrorAlert(error) {
     errorAlert.hidden = false;
     const errorList = document.getElementById('error-list');
     errorList.innerText = error.message;
 }
-
-/* RESET OPTIONS */
-const resetOptions = document.getElementById('resetOptions');
-resetOptions.onclick = () => {
-    generateAll(
-        defaultTasks,
-        defaultDefaults,
-        defaultNotifications,
-        defaultNotificationTime,
-        defaultReminderTime
-    );
-};
