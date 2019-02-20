@@ -2,7 +2,7 @@ const TIME_SHEET_REMINDER = 'TIME_SHEET_REMINDER';
 const TIME_SHEET_REMINDER_LATER = 'TIME_SHEET_REMINDER_LATER';
 const NOTIFICATION_DAY = 5;
 
-chrome.runtime.onInstalled.addListener(function() {
+chrome.runtime.onInstalled.addListener(function({ reason }) {
     chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
         chrome.declarativeContent.onPageChanged.addRules([
             {
@@ -15,7 +15,9 @@ chrome.runtime.onInstalled.addListener(function() {
             },
         ]);
     });
-    chrome.runtime.openOptionsPage();
+    if(reason === 'install') {
+        chrome.runtime.openOptionsPage();
+    }
     chrome.storage.sync.get(['notificationTime'], function({
         notificationTime,
     }) {
