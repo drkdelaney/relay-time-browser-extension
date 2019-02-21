@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import '../App.css';
-import { get, update } from '../storage-helper';
+import { get, update, save } from '../storage-helper';
 import TaskRow from './task-row';
 import AddTaskRow from './add-task-row';
+import TaskTotalsRow from './task-totals-row';
 
 class TaskTable extends Component {
     state = {
@@ -10,7 +11,7 @@ class TaskTable extends Component {
     };
 
     componentDidMount() {
-        get('tasks').then(({ tasks }) => {
+        get('tasks').then(({ tasks = [] }) => {
             this.setState({ tasks });
         });
     }
@@ -30,10 +31,27 @@ class TaskTable extends Component {
         }
     };
 
+    handleRatioFocus = () => {
+        save({ tasks: this.state.tasks });
+    };
+
+    handleRatioChange = (newRatio, i) => {
+        console.log(newRatio, i)
+        this.setState(({ tasks }) => {
+            const updatedTasks = tasks.map((task, index) => {
+                if (i === index) {
+                    return { ...task, ratio: newRatio };
+                }
+                return task;
+            });
+            return { tasks: updatedTasks };
+        });
+    };
+
     render() {
         const { tasks } = this.state;
         return (
-            <table id="task-table" className="table mb-0">
+            <table className="table mb-0">
                 <thead>
                     <tr>
                         <th scope="col" />
@@ -42,40 +60,18 @@ class TaskTable extends Component {
                         <th scope="col" />
                     </tr>
                 </thead>
-                <tbody id="tasks">
-                    {tasks.map(task => (
+                <tbody>
+                    {tasks.map((task, i) => (
                         <TaskRow
                             task={task}
-                            onDeleteTask={() => {
-                                this.handleDeleteTask(task);
-                            }}
+                            onDeleteTask={() => { this.handleDeleteTask(task, i); }}
+                            onRatioFocus={this.handleRatioFocus}
+                            onRatioChange={(newRatio) => { this.handleRatioChange(newRatio, i); }}
                         />
                     ))}
                 </tbody>
-                <tbody id="add-more">
-                    <tr>
-                        <td />
-                        <td className="task-total-row">
-                            <input
-                                type="text"
-                                readonly
-                                className="form-control-plaintext"
-                                id="taskTotal"
-                                value="Total"
-                                tabindex="-1"
-                            />
-                        </td>
-                        <td>
-                            <input
-                                type="text"
-                                className="form-control"
-                                id="inputTaskTotal"
-                                value="0.0"
-                                disabled
-                            />
-                        </td>
-                        <td />
-                    </tr>
+                <tbody>
+                    <TaskTotalsRow tasks={tasks} />
                     <AddTaskRow onNewTask={this.handleNewTask} />
                 </tbody>
             </table>

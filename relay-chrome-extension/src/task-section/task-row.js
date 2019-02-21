@@ -4,10 +4,24 @@ import { faMinusCircle, faGripLines } from '@fortawesome/free-solid-svg-icons';
 import '../App.css';
 
 class TaskRow extends Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            ratio: props.ratio || 0
+        }
+    }
+
+    handleRatioChange = (e) => {
+        const value = e.target.value;
+        const { onRatioChange } = this.props;
+        onRatioChange(value);
+    }
+
     render() {
         const {
             task: { name, ratio },
             onDeleteTask,
+            onRatioFocus
         } = this.props;
         return (
             <tr draggable="true" className="dragon-drop">
@@ -28,6 +42,8 @@ class TaskRow extends Component {
                         type="number"
                         className="form-control ratio-values"
                         value={ratio}
+                        onChange={this.handleRatioChange}
+                        onFocus={onRatioFocus}
                         min="0"
                         max="1"
                         step="0.1"
