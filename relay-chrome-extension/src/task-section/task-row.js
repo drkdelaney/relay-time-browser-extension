@@ -14,14 +14,14 @@ class TaskRow extends Component {
     handleRatioChange = (e) => {
         const value = e.target.value;
         const { onRatioChange } = this.props;
-        onRatioChange(value);
+        onRatioChange(parseFloat(value));
     }
 
     render() {
         const {
             task: { name, ratio },
             onDeleteTask,
-            onRatioFocus
+            onRatioBlur
         } = this.props;
         return (
             <tr draggable="true" className="dragon-drop">
@@ -43,7 +43,7 @@ class TaskRow extends Component {
                         className="form-control ratio-values"
                         value={ratio}
                         onChange={this.handleRatioChange}
-                        onFocus={onRatioFocus}
+                        onBlur={onRatioBlur}
                         min="0"
                         max="1"
                         step="0.1"
