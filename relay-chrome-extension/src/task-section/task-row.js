@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMinusCircle, faGripLines } from '@fortawesome/free-solid-svg-icons';
-import '../App.css';
 
 class TaskRow extends Component {
     constructor(props) {

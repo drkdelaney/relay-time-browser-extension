@@ -4,6 +4,20 @@ const TIME_SHEET_REMINDER = 'TIME_SHEET_REMINDER';
 const TIME_SHEET_REMINDER_LATER = 'TIME_SHEET_REMINDER_LATER';
 const NOTIFICATION_DAY = 5;
 
+const defaultTasks = [];
+const defaultDefaults = [
+    { day: 'Mon', value: '8', checked: true },
+    { day: 'Tue', value: '8', checked: true },
+    { day: 'Wed', value: '8', checked: true },
+    { day: 'Thu', value: '8', checked: true },
+    { day: 'Fri', value: '8', checked: true },
+    { day: 'Sat', value: '0', checked: true },
+    { day: 'Sun', value: '0', checked: true }
+];
+const defaultNotifications = true;
+const defaultNotificationTime = '11:00';
+const defaultReminderTime = 14400000; // 4 hours
+
 chrome.runtime.onInstalled.addListener(function({ reason }) {
     chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
         chrome.declarativeContent.onPageChanged.addRules([
@@ -19,6 +33,13 @@ chrome.runtime.onInstalled.addListener(function({ reason }) {
     });
     if(reason === 'install') {
         chrome.runtime.openOptionsPage();
+        chrome.storage.sync.set({
+            tasks: defaultTasks,
+            defaultDays: defaultDefaults,
+            notifications: defaultNotifications,
+            notificationTime: defaultNotificationTime,
+            reminderTime: defaultReminderTime
+        });
     }
     chrome.storage.sync.get(['notificationTime'], function({
         notificationTime,

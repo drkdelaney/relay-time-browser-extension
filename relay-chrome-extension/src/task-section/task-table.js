@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import '../App.css';
 import { get, update, save } from '../storage-helper';
 import TaskRow from './task-row';
 import AddTaskRow from './add-task-row';

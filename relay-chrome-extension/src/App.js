@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import ErrorMessage from './error-message';
 import TaskSection from './task-section';
+import NotificationSection from './notification-section';
 
 class App extends Component {
     state = {
@@ -16,7 +17,11 @@ class App extends Component {
         const { showError } = this.state;
         return <div>
             <ErrorMessage show={showError} onClose={this.handleCloseError} />
-            <TaskSection />
+            <div className="container">
+                <h1 className="title">Relay Time Options</h1>
+                <TaskSection />
+                <NotificationSection />
+            </div>
         </div>;
     }
 }
