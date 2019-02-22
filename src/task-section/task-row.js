@@ -7,8 +7,7 @@ class TaskRow extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            ratio: props.ratio || 0,
-            className: null
+            ratio: props.ratio || 0
         };
     }
 
@@ -19,22 +18,7 @@ class TaskRow extends Component {
 
     handleRatioChange = e => {
         const value = e.target.value;
-        const { onRatioChange } = this.props;
-        onRatioChange(parseFloat(value));
-    };
-
-    handleDragOver = e => {
-        e.preventDefault();
-        setTimeout(() => {
-            this.setState({ className: 'dragover' })
-        }, 0)
-        this.props.onDragOver(e);
-    };
-    
-    handleDragLeave = e => {
-        setTimeout(() => {
-            this.setState({ className: null })
-        }, 0)
+        this.props.onRatioChange(parseFloat(value));
     };
 
     render() {
@@ -44,17 +28,22 @@ class TaskRow extends Component {
             onRatioBlur,
             dragClassName,
             onDragStart,
-            onDrop
+            onDragOver,
+            onDragLeave,
+            onDrop,
+            onDragEnd,
+            onDragEnter
         } = this.props;
-        const { className } = this.state;
         return (
             <tr
                 draggable="true"
-                className={cx('dragon-drop', dragClassName, className)}
+                className={cx('dragon-drop', dragClassName)}
                 onDragStart={onDragStart}
-                onDragOver={this.handleDragOver}
-                onDragLeave={this.handleDragLeave}
+                onDragEnd={onDragEnd}
+                onDragOver={onDragOver}
+                onDragLeave={onDragLeave}
                 onDrop={onDrop}
+                onDragEnter={onDragEnter}
             >
                 <td className="delete-row-button">
                     <FontAwesomeIcon

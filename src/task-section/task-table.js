@@ -8,7 +8,8 @@ import TaskTotalsRow from './task-totals-row';
 class TaskTable extends Component {
     state = {
         tasks: [],
-        draggedTask: null
+        draggedTaskId: null,
+        dragOverId: null
     };
 
     componentDidMount() {
@@ -58,13 +59,25 @@ class TaskTable extends Component {
     handleDragStart = (i, e) => {
         e.dataTransfer.setData('dragIndex', i);
         setTimeout(() => {
-            this.setState({ draggedTask: i });
+            this.setState({ draggedTaskId: i });
         }, 0);
     };
 
     handleDragOver = (i, e) => {
-        const dragIndex = this.state.draggedTask;
-        
+        e.preventDefault();
+        this.setState({ dragOverId: i });
+    };
+
+    handleDragEnter = (e) => {
+        e.preventDefault();
+    };
+    
+    handleDragLeave = () => {
+        this.setState({ dragOverId: null });
+    };
+
+    handleDragEnd = () => {
+        this.setState({ draggedTaskId: null, dragOverId: null });
     };
 
     handleDrop = (i, e) => {
@@ -74,14 +87,13 @@ class TaskTable extends Component {
             const [removed] = result.splice(dragIndex, 1);
             result.splice(i, 0, removed);
 
-            return { tasks: result, draggedTask: null };
+            save({ tasks: result })
+            return { tasks: result };
         });
-        console.log('drop', dragIndex, i);
     };
 
     render() {
-        const { tasks, draggedTask } = this.state;
-        console.log();
+        const { tasks, draggedTaskId, dragOverId } = this.state;
         return (
             <table className="table mb-0">
                 <thead>
@@ -103,16 +115,13 @@ class TaskTable extends Component {
                             onRatioChange={newRatio => {
                                 this.handleRatioChange(newRatio, i);
                             }}
-                            dragClassName={cx(draggedTask === i && 'invisible')}
-                            onDragStart={e => {
-                                this.handleDragStart(i, e);
-                            }}
-                            onDragOver={e => {
-                                this.handleDragOver(i, e);
-                            }}
-                            onDrop={e => {
-                                this.handleDrop(i, e);
-                            }}
+                            dragClassName={cx(draggedTaskId === i && 'invisible', dragOverId === i && 'dragover')}
+                            onDragStart={this.handleDragStart.bind(this, i)}
+                            onDragEnd={this.handleDragEnd}
+                            onDrop={this.handleDrop.bind(this, i)}
+                            onDragOver={this.handleDragOver.bind(this, i)}
+                            onDragEnter={this.handleDragEnter}
+                            onDragLeave={this.handleDragLeave}
                         />
                     ))}
                 </tbody>
