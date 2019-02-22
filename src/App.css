@@ -85,6 +85,10 @@ table {
     vertical-align: middle !important;
 }
 
+.dragon-drop {
+    background-color: white;
+}
+
 .dragover {
     border: 3px dashed black !important;
 }

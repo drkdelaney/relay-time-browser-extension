@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import cx from 'classnames';
 import { get, update, save } from '../storage-helper';
 import TaskRow from './task-row';
 import AddTaskRow from './add-task-row';
@@ -6,7 +7,8 @@ import TaskTotalsRow from './task-totals-row';
 
 class TaskTable extends Component {
     state = {
-        tasks: []
+        tasks: [],
+        draggedTask: null
     };
 
     componentDidMount() {
@@ -53,8 +55,33 @@ class TaskTable extends Component {
         });
     };
 
+    handleDragStart = (i, e) => {
+        e.dataTransfer.setData('dragIndex', i);
+        setTimeout(() => {
+            this.setState({ draggedTask: i });
+        }, 0);
+    };
+
+    handleDragOver = (i, e) => {
+        const dragIndex = this.state.draggedTask;
+        
+    };
+
+    handleDrop = (i, e) => {
+        const dragIndex = e.dataTransfer.getData('dragIndex');
+        this.setState(({ tasks }) => {
+            const result = Array.from(tasks);
+            const [removed] = result.splice(dragIndex, 1);
+            result.splice(i, 0, removed);
+
+            return { tasks: result, draggedTask: null };
+        });
+        console.log('drop', dragIndex, i);
+    };
+
     render() {
-        const { tasks } = this.state;
+        const { tasks, draggedTask } = this.state;
+        console.log();
         return (
             <table className="table mb-0">
                 <thead>
@@ -75,6 +102,16 @@ class TaskTable extends Component {
                             onRatioBlur={this.handleRatioBlur}
                             onRatioChange={newRatio => {
                                 this.handleRatioChange(newRatio, i);
+                            }}
+                            dragClassName={cx(draggedTask === i && 'invisible')}
+                            onDragStart={e => {
+                                this.handleDragStart(i, e);
+                            }}
+                            onDragOver={e => {
+                                this.handleDragOver(i, e);
+                            }}
+                            onDrop={e => {
+                                this.handleDrop(i, e);
                             }}
                         />
                     ))}

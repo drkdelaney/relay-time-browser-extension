@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import cx from 'classnames';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMinusCircle, faGripLines } from '@fortawesome/free-solid-svg-icons';
 
@@ -6,26 +7,60 @@ class TaskRow extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            ratio: props.ratio || 0
-        }
+            ratio: props.ratio || 0,
+            className: null
+        };
     }
 
-    handleRatioChange = (e) => {
+    defaultProps = {
+        onDragStart: () => {},
+        onDrop: () => {},
+    }
+
+    handleRatioChange = e => {
         const value = e.target.value;
         const { onRatioChange } = this.props;
         onRatioChange(parseFloat(value));
-    }
+    };
+
+    handleDragOver = e => {
+        e.preventDefault();
+        setTimeout(() => {
+            this.setState({ className: 'dragover' })
+        }, 0)
+        this.props.onDragOver(e);
+    };
+    
+    handleDragLeave = e => {
+        setTimeout(() => {
+            this.setState({ className: null })
+        }, 0)
+    };
 
     render() {
         const {
             task: { name, ratio },
             onDeleteTask,
-            onRatioBlur
+            onRatioBlur,
+            dragClassName,
+            onDragStart,
+            onDrop
         } = this.props;
+        const { className } = this.state;
         return (
-            <tr draggable="true" className="dragon-drop">
+            <tr
+                draggable="true"
+                className={cx('dragon-drop', dragClassName, className)}
+                onDragStart={onDragStart}
+                onDragOver={this.handleDragOver}
+                onDragLeave={this.handleDragLeave}
+                onDrop={onDrop}
+            >
                 <td className="delete-row-button">
-                    <FontAwesomeIcon icon={faMinusCircle} onClick={onDeleteTask} />
+                    <FontAwesomeIcon
+                        icon={faMinusCircle}
+                        onClick={onDeleteTask}
+                    />
                 </td>
                 <td>
                     <input
