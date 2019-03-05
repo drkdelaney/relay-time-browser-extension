@@ -12,7 +12,7 @@ const defaultDefaults = [
     { day: 'Thu', value: '8', checked: true },
     { day: 'Fri', value: '8', checked: true },
     { day: 'Sat', value: '0', checked: true },
-    { day: 'Sun', value: '0', checked: true }
+    { day: 'Sun', value: '0', checked: true },
 ];
 const defaultNotifications = true;
 const defaultNotificationTime = '11:00';
@@ -31,19 +31,19 @@ chrome.runtime.onInstalled.addListener(function({ reason }) {
             },
         ]);
     });
-    if(reason === 'install') {
+    if (reason === 'install') {
         chrome.runtime.openOptionsPage();
         chrome.storage.sync.set({
             tasks: defaultTasks,
             defaultDays: defaultDefaults,
             notifications: defaultNotifications,
             notificationTime: defaultNotificationTime,
-            reminderTime: defaultReminderTime
+            reminderTime: defaultReminderTime,
         });
+    } else if (reason === 'update') {
+        chrome.alarms.clearAll();
     }
-    chrome.storage.sync.get(['notificationTime'], function({
-        notificationTime,
-    }) {
+    chrome.storage.sync.get(['notificationTime'], ({ notificationTime }) => {
         if (notificationTime) {
             const [hour, minute] = notificationTime.split(':');
             createWeeklyAlarm(NOTIFICATION_DAY, hour, minute);
@@ -55,21 +55,22 @@ chrome.runtime.onInstalled.addListener(function({ reason }) {
 
 chrome.alarms.onAlarm.addListener(alarm => {
     showNotification();
+    if (alarm.name === TIME_SHEET_REMINDER_LATER)
+        chrome.alarms.clear(TIME_SHEET_REMINDER_LATER);
 });
 
 chrome.notifications.onClicked.addListener(() => {
     goToRelay();
 });
 
+chrome.notifications.onClosed.addListener((notificationId, byUser) => {
+    chrome.notifications.clear(notificationId);
+    chrome.alarms.clear(TIME_SHEET_REMINDER_LATER);
+});
+
 chrome.notifications.onButtonClicked.addListener(
     (notificationId, buttonIndex) => {
-        [goToRelay, dismissNotification][buttonIndex](notificationId);
-    }
-);
-
-chrome.notifications.onClosed.addListener(
-    (notificationId, byUser) => {
-        chrome.notifications.clear(notificationId);
+        [goToRelay, createReminderNotification][buttonIndex](notificationId);
     }
 );
 
@@ -103,7 +104,7 @@ function goToRelay() {
     chrome.tabs.create({ url: 'https://ppm-nike.saas.hpe.com/' });
 }
 
-function dismissNotification(notificationId) {
+function createReminderNotification(notificationId) {
     chrome.notifications.clear(notificationId);
     chrome.storage.sync.get('reminderTime', function({ reminderTime }) {
         const jsTime = Date.now() + Number(reminderTime);
@@ -111,7 +112,7 @@ function dismissNotification(notificationId) {
     });
 }
 
-function showNotification(isLater) {
+function showNotification() {
     const notificationOptions = {
         type: 'basic',
         iconUrl: 'images/relay_time_icon128.png',
