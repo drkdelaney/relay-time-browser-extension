@@ -31,15 +31,9 @@ Example
 | Design | 0.3 |
 | Total | 1.0 |
 
-**Defaults**
-
-This section is where you set the defaults for the Relay Time popup. Use the input boxes to set the hours you would typically work. This is initially set up to be 8 hrs Mon - Fri. The checkboxes allow you to show/hide the day of the week in the Relay Time popup. For example, if you normally work 4 10 hour shifts, Maybe change this to 10hrs Mon-Fri.
-
 **Notifications**
 
 This section is where you set notifications and reminders. By default notifications are on and will notify you at 11:00. If you select the option to "Do it later", the reminder will notify you again in 4 hours. Those options are configurable in this section.
-
-**DON'T FORGET TO SAVE THE CHANGES WHEN YOU ARE DONE!**
 
 ## Relay Time Popup
 When you install the chrome extension it will also add a button to your toolbar. The button is only enabled when you are on the Relay time sheet site. Given you are on the site, click the button on the to display the popup. It will have the times for each day populated with the defaults from the Options page. If you worked more or less hours you can change that in the popup. Clicking save will fill out the time sheet fields with the correct time based on the ratios and save the time sheet. If everything looks good, you may submit it. 
