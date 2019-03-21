@@ -74,3 +74,21 @@ table {
 .alert {
     border-radius: 0;
 }
+
+.delete-row-button {
+    color: tomato;
+    vertical-align: middle !important;
+    width: 38px;
+}
+
+.grip-row-button {
+    vertical-align: middle !important;
+}
+
+.dragon-drop {
+    background-color: white;
+}
+
+.dragover {
+    border: 3px dashed black !important;
+}

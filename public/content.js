@@ -1,3 +1,5 @@
+/*global chrome*/
+
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === 'setHours') {
         if (message.timeSheetHours) {

@@ -1,3 +1,5 @@
+/*global chrome*/
+
 const doneButton = document.getElementById('done-button');
 doneButton.onclick = generateTimeSheetHours;
 
