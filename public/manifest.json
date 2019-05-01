@@ -10,7 +10,7 @@
     "options_page": "index.html",
     "content_scripts": [
         {
-            "matches": ["https://ppm-nike.saas.hpe.com/*"],
+            "matches": ["https://ppm-nike.saas.microfocus.com/*"],
             "js": ["content.js"]
         }
     ],

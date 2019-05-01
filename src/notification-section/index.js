@@ -5,13 +5,12 @@ class NotificationSection extends Component {
     state = {
         notifications: null,
         notificationTime: null,
-        reminderTime: null
     };
 
     componentDidMount() {
-        get(['notifications', 'notificationTime', 'reminderTime']).then(
-            ({ notifications, notificationTime, reminderTime }) => {
-                this.setState({ notifications, notificationTime, reminderTime });
+        get(['notifications', 'notificationTime']).then(
+            ({ notifications, notificationTime }) => {
+                this.setState({ notifications, notificationTime });
             }
         );
     }
@@ -27,13 +26,6 @@ class NotificationSection extends Component {
         const value = e.target.value;
         save({ notificationTime: value }).then(() => {
             this.setState({ notificationTime: value });
-        });
-    };
-    
-    handleReminderChange = (e) => {
-        const value = e.target.value;
-        save({ reminderTime: value }).then(() => {
-            this.setState({ reminderTime: value });
         });
     };
 
@@ -66,24 +58,6 @@ class NotificationSection extends Component {
                         onChange={this.handleNotificationTimeChange}
                         value={notificationTime}
                     />
-                    <input
-                        type="text"
-                        readonly
-                        class="form-control-plaintext text-right notification mr-2"
-                        value="Reminder in"
-                        tabindex="-1"
-                    />
-                    <select
-                        class="form-control notification"
-                        onChange={this.handleReminderChange}
-                        value={reminderTime}
-                    >
-                        <option value="900000">15 minutes</option>
-                        <option value="1800000">30 minutes</option>
-                        <option value="3600000">1 hour</option>
-                        <option value="7200000">2 hours</option>
-                        <option value="14400000">4 hours</option>
-                    </select>
                 </div>
             </div>
         );
