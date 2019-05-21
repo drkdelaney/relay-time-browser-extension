@@ -18,7 +18,7 @@ class App extends Component {
         return <div>
             <ErrorMessage show={showError} onClose={this.handleCloseError} />
             <div className="container">
-                <h1 className="title">Relay Time Options</h1>
+                <h1 className="title-text">Relay Time Options</h1>
                 <TaskSection />
                 <NotificationSection />
             </div>
