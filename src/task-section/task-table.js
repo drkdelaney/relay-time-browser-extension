@@ -71,7 +71,7 @@ class TaskTable extends Component {
     handleDragEnter = (e) => {
         e.preventDefault();
     };
-    
+
     handleDragLeave = () => {
         this.setState({ dragOverId: null });
     };
