@@ -10,7 +10,8 @@
     "classnames": "^2.2.6",
     "react": "^16.8.2",
     "react-dom": "^16.8.2",
-    "react-scripts": "2.1.5"
+    "react-scripts": "2.1.5",
+    "xlsx": "^0.14.3"
   },
   "scripts": {
     "start": "react-scripts start",
