@@ -1,7 +1,6 @@
 /*global chrome*/
 
 const TIME_SHEET_REMINDER = 'TIME_SHEET_REMINDER';
-const TIME_SHEET_REMINDER_LATER = 'TIME_SHEET_REMINDER_LATER';
 const NOTIFICATION_DAY = 5;
 
 const defaultTasks = [];
@@ -16,7 +15,6 @@ const defaultDefaults = [
 ];
 const defaultNotifications = true;
 const defaultNotificationTime = '11:00';
-const defaultReminderTime = 14400000; // 4 hours
 
 chrome.runtime.onInstalled.addListener(function({ reason }) {
     chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
@@ -24,7 +22,7 @@ chrome.runtime.onInstalled.addListener(function({ reason }) {
             {
                 conditions: [
                     new chrome.declarativeContent.PageStateMatcher({
-                        pageUrl: { hostEquals: 'ppm-nike.saas.hpe.com' },
+                        pageUrl: { hostEquals: 'ppm-nike.saas.microfocus.com' },
                     }),
                 ],
                 actions: [new chrome.declarativeContent.ShowPageAction()],
@@ -38,7 +36,6 @@ chrome.runtime.onInstalled.addListener(function({ reason }) {
             defaultDays: defaultDefaults,
             notifications: defaultNotifications,
             notificationTime: defaultNotificationTime,
-            reminderTime: defaultReminderTime,
         });
     } else if (reason === 'update') {
         chrome.alarms.clearAll();
@@ -55,8 +52,6 @@ chrome.runtime.onInstalled.addListener(function({ reason }) {
 
 chrome.alarms.onAlarm.addListener(alarm => {
     showNotification();
-    if (alarm.name === TIME_SHEET_REMINDER_LATER)
-        chrome.alarms.clear(TIME_SHEET_REMINDER_LATER);
 });
 
 chrome.notifications.onClicked.addListener(() => {
@@ -65,14 +60,7 @@ chrome.notifications.onClicked.addListener(() => {
 
 chrome.notifications.onClosed.addListener((notificationId, byUser) => {
     chrome.notifications.clear(notificationId);
-    chrome.alarms.clear(TIME_SHEET_REMINDER_LATER);
 });
-
-chrome.notifications.onButtonClicked.addListener(
-    (notificationId, buttonIndex) => {
-        [goToRelay, createReminderNotification][buttonIndex](notificationId);
-    }
-);
 
 chrome.storage.onChanged.addListener(
     ({ notificationTime = {}, notifications = {} }) => {
@@ -94,22 +82,8 @@ function createWeeklyAlarm(day, hour, minute = 0) {
     });
 }
 
-function createTempAlarm(jsTime) {
-    chrome.alarms.create(TIME_SHEET_REMINDER_LATER, {
-        when: jsTime,
-    });
-}
-
 function goToRelay() {
-    chrome.tabs.create({ url: 'https://ppm-nike.saas.hpe.com/' });
-}
-
-function createReminderNotification(notificationId) {
-    chrome.notifications.clear(notificationId);
-    chrome.storage.sync.get('reminderTime', function({ reminderTime }) {
-        const jsTime = Date.now() + Number(reminderTime);
-        createTempAlarm(jsTime);
-    });
+    chrome.tabs.create({ url: 'https://ppm-nike.saas.microfocus.com/' });
 }
 
 function showNotification() {
@@ -119,7 +93,6 @@ function showNotification() {
         title: 'Relay Time!',
         message: "Don't forget to submit your time sheet!",
         requireInteraction: true,
-        buttons: [{ title: "I'll do it now" }, { title: "I'll do it later" }],
     };
     chrome.notifications.create('reminder', notificationOptions);
 }

@@ -33,7 +33,7 @@ Example
 
 **Notifications**
 
-This section is where you set notifications and reminders. By default notifications are on and will notify you at 11:00 on Friday.
+This section is where you set notifications. By default notifications are on and will notify you at 11:00 on Friday.
 
 ## Relay Time Popup
 When you install the chrome extension it will also add a button to your toolbar. The button is only enabled when you are on the Relay time sheet site. Given you are on the site, click the button on the to display the popup. It will have the times for each day populated with the defaults from the Options page. If you worked more or less hours you can change that in the popup. Clicking save will fill out the time sheet fields with the correct time based on the ratios and save the time sheet. If everything looks good, you may submit it.

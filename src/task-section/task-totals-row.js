@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 class TaskTotalsRow extends Component {
     render() {
         const { tasks } = this.props;
-        const total = tasks.reduce((sum, { ratio }) => sum + ratio, 0);
+        const total = tasks.reduce((sum, { ratio }) => sum + parseFloat(ratio), 0);
         return <tr>
             <td />
             <td className="task-total-row">
