@@ -2,12 +2,20 @@
     "name": "Relay Time",
     "version": "1.1.2",
     "description": "Enters your time in the relay time sheet",
-    "permissions": ["declarativeContent", "storage", "activeTab", "alarms", "notifications"],
-    "background": {
-        "scripts": ["background.js"],
-        "persistent": false
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "relaytime@pintoverflow.com",
+            "strict_min_version": "42.0"
+        }
     },
-    "options_page": "index.html",
+    "permissions": ["storage", "activeTab", "tabs", "alarms", "notifications"],
+    "background": {
+        "scripts": ["background.js"]
+    },
+    "options_ui": {
+        "page": "index.html",
+        "open_in_tab": true
+    },
     "content_scripts": [
         {
             "matches": ["https://ppm-nike.saas.microfocus.com/*"],
@@ -29,7 +37,7 @@
         "48": "images/relay_time_icon48.png",
         "128": "images/relay_time_icon128.png"
     },
-    "homepage_url": "https://github.com/derekedelaney/relay-time-chrome-extension",
+    "homepage_url": "https://github.com/derekedelaney/relay-time-browser-extension",
     "manifest_version": 2,
     "content_security_policy": "script-src 'self' 'sha256-5As4+3YpY62+l38PsxCEkjB1R4YtyktBtRScTJ3fyLU='; object-src 'self'"
 }

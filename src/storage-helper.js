@@ -1,10 +1,10 @@
-/*global chrome*/
+/*global browser*/
 
 export function get(keys) {
     return new Promise((resolve, reject) => {
-        chrome.storage.sync.get(keys, (data) => {
-            if (chrome.runtime.lastError) {
-                reject(chrome.runtime.lastError);
+        browser.storage.sync.get(keys, (data) => {
+            if (browser.runtime.lastError) {
+                reject(browser.runtime.lastError);
             }
             resolve(data);
         });
@@ -13,9 +13,9 @@ export function get(keys) {
 
 export function save(obj) {
     return new Promise((resolve, reject) => {
-        chrome.storage.sync.set(obj, () => {
-            if (chrome.runtime.lastError) {
-                reject(chrome.runtime.lastError);
+        browser.storage.sync.set(obj, () => {
+            if (browser.runtime.lastError) {
+                reject(browser.runtime.lastError);
             }
             resolve(obj);
         });

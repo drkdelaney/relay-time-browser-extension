@@ -21,7 +21,7 @@ class NotificationSection extends Component {
             this.setState({ notifications: value });
         })
     };
-    
+
     handleNotificationTimeChange = (e) => {
         const value = e.target.value;
         save({ notificationTime: value }).then(() => {
