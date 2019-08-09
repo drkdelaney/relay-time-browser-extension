@@ -2,7 +2,7 @@
 
 Chrome: [Install Extension](https://chrome.google.com/webstore/detail/relay-time/ominbkhiagfojcchnadpanlaimdhiolh?hl=en-US)
 
-Firefox: [Install Extension]()
+Firefox: [Install Extension](https://addons.mozilla.org/en-US/firefox/addon/relay-time/)
 
 ## Initial Setup
 The extension should open the Relay Time Options page on initial installation. There are two sections: tasks and notifications.
