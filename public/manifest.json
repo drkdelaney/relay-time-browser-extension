@@ -2,12 +2,6 @@
     "name": "Relay Time",
     "version": "1.2.0",
     "description": "Enters your time in the relay time sheet",
-    "browser_specific_settings": {
-        "gecko": {
-            "id": "relaytime@pintoverflow.com",
-            "strict_min_version": "42.0"
-        }
-    },
     "permissions": ["storage", "activeTab", "tabs", "alarms", "notifications"],
     "background": {
         "scripts": ["browser-polyfill.min.js", "background.js"]
