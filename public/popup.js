@@ -57,7 +57,7 @@ function hourChange() {
 
 function getTimeSheetHours(func) {
     const hours = document.querySelectorAll('.hours');
-    browser.storage.sync.get(['tasks', 'defaultDays'], function(data) {
+    browser.storage.sync.get(['tasks', 'defaultDays']).then((data) => {
         const { tasks, defaultDays } = data;
         if ((Array.isArray(tasks), Array.isArray(defaultDays))) {
             const tableData = [];
@@ -82,17 +82,12 @@ function getTimeSheetHours(func) {
 
 function generateTimeSheetHours() {
     getTimeSheetHours(timeSheetHours => {
-        browser.tabs.query({ active: true }, function(tabs) {
+        browser.tabs.query({ active: true }).then((tabs) => {
             // Send a request to the content script.
             const tab = tabs.find(e => e.title === 'Edit Time Sheet');
-            browser.tabs.sendMessage(
-                tab.id,
-                { action: 'setHours', timeSheetHours },
-                {},
-                function() {
-                    window.close();
-                }
-            );
+            browser.tabs.sendMessage(tab.id, { action: 'setHours', timeSheetHours }, {}).then(() => {
+                window.close()
+            });
         });
     });
 }
