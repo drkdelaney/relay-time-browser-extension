@@ -1,4 +1,4 @@
-/*global browser*/
+/* global browser */
 
 browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.action === 'setHours') {

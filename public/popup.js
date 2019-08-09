@@ -1,9 +1,9 @@
-/*global browser*/
+/* global browser */
 
 const doneButton = document.getElementById('done-button');
 doneButton.onclick = generateTimeSheetHours;
 
-browser.storage.sync.get('tasks', function(data) {
+browser.storage.sync.get('tasks').then((data) => {
     if (Array.isArray(data.tasks)) {
         doneButton.disabled = false;
     } else {
@@ -11,7 +11,7 @@ browser.storage.sync.get('tasks', function(data) {
     }
 });
 
-browser.storage.sync.get('defaultDays', function(data) {
+browser.storage.sync.get('defaultDays').then((data) => {
     if (Array.isArray(data.defaultDays)) {
         populateDefaultDays(data.defaultDays);
     } else {
@@ -39,7 +39,7 @@ function populateDefaultDays(defaultDays = []) {
         },
         0
     );
-    // set calbacks to calc totals
+    // set callbacks to calc totals
     const hourElements = document.querySelectorAll('.hours');
     for (const element of hourElements) {
         element.onkeyup = hourChange;

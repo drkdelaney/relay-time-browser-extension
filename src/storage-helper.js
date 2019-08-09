@@ -1,25 +1,11 @@
-/*global browser*/
+import browser from 'webextension-polyfill';
 
 export function get(keys) {
-    return new Promise((resolve, reject) => {
-        browser.storage.sync.get(keys, (data) => {
-            if (browser.runtime.lastError) {
-                reject(browser.runtime.lastError);
-            }
-            resolve(data);
-        });
-    });
+    return browser.storage.sync.get(keys);
 }
 
 export function save(obj) {
-    return new Promise((resolve, reject) => {
-        browser.storage.sync.set(obj, () => {
-            if (browser.runtime.lastError) {
-                reject(browser.runtime.lastError);
-            }
-            resolve(obj);
-        });
-    });
+    return browser.storage.sync.set(obj);
 }
 
 export function update(key, callback) {

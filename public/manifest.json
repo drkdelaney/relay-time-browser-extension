@@ -10,7 +10,7 @@
     },
     "permissions": ["storage", "activeTab", "tabs", "alarms", "notifications"],
     "background": {
-        "scripts": ["background.js"]
+        "scripts": ["browser-polyfill.min.js", "background.js"]
     },
     "options_ui": {
         "page": "index.html",
@@ -19,7 +19,7 @@
     "content_scripts": [
         {
             "matches": ["https://ppm-nike.saas.microfocus.com/*"],
-            "js": ["content.js"]
+            "js": ["browser-polyfill.min.js", "content.js"]
         }
     ],
     "page_action": {

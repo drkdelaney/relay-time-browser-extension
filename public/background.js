@@ -1,4 +1,4 @@
-/*global browser*/
+/* global browser */
 
 const TIME_SHEET_REMINDER = 'TIME_SHEET_REMINDER';
 const NOTIFICATION_DAY = 5;
@@ -16,27 +16,38 @@ const defaultDefaults = [
 const defaultNotifications = true;
 const defaultNotificationTime = '11:00';
 
-browser.runtime.onInstalled.addListener(function({ reason }) {
-    browser.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+browser.runtime.onInstalled.addListener(({ reason }) => {
+    browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         if (tab.url.match('ppm-nike.saas.microfocus.com')) {
             browser.pageAction.show(tabId);
         } else {
             browser.pageAction.hide(tabId);
         }
     });
-    console.log(reason);
+
     if (reason === 'install') {
-        browser.runtime.openOptionsPage();
-        browser.storage.sync.set({
-            tasks: defaultTasks,
-            defaultDays: defaultDefaults,
-            notifications: defaultNotifications,
-            notificationTime: defaultNotificationTime,
+        browser.storage.sync.get('tasks').then(results => {
+            if (!results || !Array.isArray(results.tasks)) {
+                browser.storage.sync.set({
+                    tasks: defaultTasks,
+                    defaultDays: defaultDefaults,
+                    notifications: defaultNotifications,
+                    notificationTime: defaultNotificationTime,
+                });
+            }
+        }).catch(() => {
+            browser.storage.sync.set({
+                tasks: defaultTasks,
+                defaultDays: defaultDefaults,
+                notifications: defaultNotifications,
+                notificationTime: defaultNotificationTime,
+            });
         });
+        browser.runtime.openOptionsPage();
     } else if (reason === 'update') {
         browser.alarms.clearAll();
     }
-    browser.storage.sync.get(['notificationTime'], ({ notificationTime }) => {
+    browser.storage.sync.get('notificationTime').then(({ notificationTime }) => {
         if (notificationTime) {
             const [hour, minute] = notificationTime.split(':');
             createWeeklyAlarm(NOTIFICATION_DAY, hour, minute);
@@ -50,8 +61,9 @@ browser.alarms.onAlarm.addListener(alarm => {
     showNotification();
 });
 
-browser.notifications.onClicked.addListener(() => {
+browser.notifications.onClicked.addListener(notificationId => {
     goToRelay();
+    browser.notifications.clear(notificationId);
 });
 
 browser.notifications.onClosed.addListener((notificationId, byUser) => {
