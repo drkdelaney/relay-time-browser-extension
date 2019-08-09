@@ -1,6 +1,7 @@
 # Relay Time Browser Extension
 
 Chrome: [Install Extenstion](https://chrome.google.com/webstore/detail/relay-time/ominbkhiagfojcchnadpanlaimdhiolh?hl=en-US)
+
 Firefox: [Install Extenstion]()
 
 ## Initial Setup
