@@ -94,19 +94,3 @@ table {
 .dragover {
     border: 3px dashed black !important;
 }
-
-.excel-svg {
-    height: 28px;
-    width: 36px;
-    margin: -14px 5px 0px;
-    color: #6c757d;
-    transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
-    cursor: pointer;
-}
-.excel-svg:hover {
-    color: #5a6268
-}
-
-.excel-svg use {
-    fill: currentColor;
-}
