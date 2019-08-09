@@ -1,7 +1,7 @@
 # Relay Time browser Extension
 
-Chrome: [Install Extenstion](https://browser.google.com/webstore/detail/relay-time/ominbkhiagfojcchnadpanlaimdhiolh?hl=en-US)
-Firefox: [Install Extenstion](https://browser.google.com/webstore/detail/relay-time/ominbkhiagfojcchnadpanlaimdhiolh?hl=en-US)
+Chrome: [Install Extenstion](https://chrome.google.com/webstore/detail/relay-time/ominbkhiagfojcchnadpanlaimdhiolh?hl=en-US)
+Firefox: [Install Extenstion]()
 
 ## Initial Setup
 The extension should open the Relay Time Options page on initial installation. There are two sections: tasks and notifications.
