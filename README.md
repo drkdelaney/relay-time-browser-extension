@@ -1,19 +1,7 @@
 # Relay Time browser Extension
 
-[Install Extenstion](https://browser.google.com/webstore/detail/relay-time/ominbkhiagfojcchnadpanlaimdhiolh?hl=en-US)
-
-## Manual install
-**Mac**
-- [Download Extension](https://github.com/derekedelaney/relay-time-browser-extension/raw/master/relay-browser-extension.crx)
-- Open browser extension settings (browser://extensions/)
-- Toggle developer mode in the top right corner
-- Drag the extension file to the extension page
-
-**Windows**
-- Download the repo as a zip file and extract it
-- Open browser extension settings (browser://extensions/)
-- Toggle developer mode in the top right corner
-- Click on the button, `Load unpacked` and select the browser extension folder.
+Chrome: [Install Extenstion](https://browser.google.com/webstore/detail/relay-time/ominbkhiagfojcchnadpanlaimdhiolh?hl=en-US)
+Firefox: [Install Extenstion](https://browser.google.com/webstore/detail/relay-time/ominbkhiagfojcchnadpanlaimdhiolh?hl=en-US)
 
 ## Initial Setup
 The extension should open the Relay Time Options page on initial installation. There are two sections: tasks and notifications.
