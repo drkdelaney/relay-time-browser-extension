@@ -1,35 +1,22 @@
-/*global chrome*/
+import browser from 'webextension-polyfill';
 
 export function get(keys) {
-    return new Promise((resolve, reject) => {
-        chrome.storage.sync.get(keys, (data) => {
-            if (chrome.runtime.lastError) {
-                reject(chrome.runtime.lastError);
-            }
-            resolve(data);
-        });
-    });
+    return browser.storage.sync.get(keys);
 }
 
 export function save(obj) {
-    return new Promise((resolve, reject) => {
-        chrome.storage.sync.set(obj, () => {
-            if (chrome.runtime.lastError) {
-                reject(chrome.runtime.lastError);
-            }
-            resolve(obj);
-        });
-    });
+    return browser.storage.sync.set(obj);
 }
 
 export function update(key, callback) {
-    return get(key)
-        .then(callback)
-        .then(updatedData => save({[key]: updatedData}));
-}
-
-export function updateAll(keys, callback) {
-    return get(keys)
-        .then(callback)
-        .then(updatedData => save(updatedData));
+    return new Promise((resolve, reject) => {
+        return get(key)
+            .then(callback)
+            .then(async updatedData => {
+                const data = { [key]: updatedData };
+                await save(data);
+                resolve(data);
+            })
+            .catch(reject);
+    });
 }

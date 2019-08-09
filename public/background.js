@@ -1,4 +1,4 @@
-/*global chrome*/
+/* global browser */
 
 const TIME_SHEET_REMINDER = 'TIME_SHEET_REMINDER';
 const NOTIFICATION_DAY = 5;
@@ -16,31 +16,38 @@ const defaultDefaults = [
 const defaultNotifications = true;
 const defaultNotificationTime = '11:00';
 
-chrome.runtime.onInstalled.addListener(function({ reason }) {
-    chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
-        chrome.declarativeContent.onPageChanged.addRules([
-            {
-                conditions: [
-                    new chrome.declarativeContent.PageStateMatcher({
-                        pageUrl: { hostEquals: 'ppm-nike.saas.microfocus.com' },
-                    }),
-                ],
-                actions: [new chrome.declarativeContent.ShowPageAction()],
-            },
-        ]);
+browser.runtime.onInstalled.addListener(({ reason }) => {
+    browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+        if (tab.url.match('ppm-nike.saas.microfocus.com')) {
+            browser.pageAction.show(tabId);
+        } else {
+            browser.pageAction.hide(tabId);
+        }
     });
+
     if (reason === 'install') {
-        chrome.runtime.openOptionsPage();
-        chrome.storage.sync.set({
-            tasks: defaultTasks,
-            defaultDays: defaultDefaults,
-            notifications: defaultNotifications,
-            notificationTime: defaultNotificationTime,
+        browser.storage.sync.get('tasks').then(results => {
+            if (!results || !Array.isArray(results.tasks)) {
+                browser.storage.sync.set({
+                    tasks: defaultTasks,
+                    defaultDays: defaultDefaults,
+                    notifications: defaultNotifications,
+                    notificationTime: defaultNotificationTime,
+                });
+            }
+        }).catch(() => {
+            browser.storage.sync.set({
+                tasks: defaultTasks,
+                defaultDays: defaultDefaults,
+                notifications: defaultNotifications,
+                notificationTime: defaultNotificationTime,
+            });
         });
+        browser.runtime.openOptionsPage();
     } else if (reason === 'update') {
-        chrome.alarms.clearAll();
+        browser.alarms.clearAll();
     }
-    chrome.storage.sync.get(['notificationTime'], ({ notificationTime }) => {
+    browser.storage.sync.get('notificationTime').then(({ notificationTime }) => {
         if (notificationTime) {
             const [hour, minute] = notificationTime.split(':');
             createWeeklyAlarm(NOTIFICATION_DAY, hour, minute);
@@ -50,40 +57,41 @@ chrome.runtime.onInstalled.addListener(function({ reason }) {
     });
 });
 
-chrome.alarms.onAlarm.addListener(alarm => {
+browser.alarms.onAlarm.addListener(alarm => {
     showNotification();
 });
 
-chrome.notifications.onClicked.addListener(() => {
+browser.notifications.onClicked.addListener(notificationId => {
     goToRelay();
+    browser.notifications.clear(notificationId);
 });
 
-chrome.notifications.onClosed.addListener((notificationId, byUser) => {
-    chrome.notifications.clear(notificationId);
+browser.notifications.onClosed.addListener((notificationId, byUser) => {
+    browser.notifications.clear(notificationId);
 });
 
-chrome.storage.onChanged.addListener(
+browser.storage.onChanged.addListener(
     ({ notificationTime = {}, notifications = {} }) => {
         if (notificationTime.newValue) {
-            chrome.alarms.clearAll();
+            browser.alarms.clearAll();
             const [hour, minute] = notificationTime.newValue.split(':');
             createWeeklyAlarm(NOTIFICATION_DAY, hour, minute);
         }
         if (notifications.newValue === false) {
-            chrome.alarms.clearAll();
+            browser.alarms.clearAll();
         }
     }
 );
 
 function createWeeklyAlarm(day, hour, minute = 0) {
-    chrome.alarms.create(TIME_SHEET_REMINDER, {
+    browser.alarms.create(TIME_SHEET_REMINDER, {
         periodInMinutes: 10080,
         when: nextOccurrenceOfDayAndTime(day, hour, minute).getTime(),
     });
 }
 
 function goToRelay() {
-    chrome.tabs.create({ url: 'https://ppm-nike.saas.microfocus.com/' });
+    browser.tabs.create({ url: 'https://ppm-nike.saas.microfocus.com/' });
 }
 
 function showNotification() {
@@ -94,7 +102,7 @@ function showNotification() {
         message: "Don't forget to submit your time sheet!",
         requireInteraction: true,
     };
-    chrome.notifications.create('reminder', notificationOptions);
+    browser.notifications.create('reminder', notificationOptions);
 }
 
 function nextOccurrenceOfDayAndTime(dayOfWeek, hour, minute) {

@@ -1,9 +1,9 @@
-/*global chrome*/
+/* global browser */
 
 const doneButton = document.getElementById('done-button');
 doneButton.onclick = generateTimeSheetHours;
 
-chrome.storage.sync.get('tasks', function(data) {
+browser.storage.sync.get('tasks').then((data) => {
     if (Array.isArray(data.tasks)) {
         doneButton.disabled = false;
     } else {
@@ -11,7 +11,7 @@ chrome.storage.sync.get('tasks', function(data) {
     }
 });
 
-chrome.storage.sync.get('defaultDays', function(data) {
+browser.storage.sync.get('defaultDays').then((data) => {
     if (Array.isArray(data.defaultDays)) {
         populateDefaultDays(data.defaultDays);
     } else {
@@ -39,7 +39,7 @@ function populateDefaultDays(defaultDays = []) {
         },
         0
     );
-    // set calbacks to calc totals
+    // set callbacks to calc totals
     const hourElements = document.querySelectorAll('.hours');
     for (const element of hourElements) {
         element.onkeyup = hourChange;
@@ -57,7 +57,7 @@ function hourChange() {
 
 function getTimeSheetHours(func) {
     const hours = document.querySelectorAll('.hours');
-    chrome.storage.sync.get(['tasks', 'defaultDays'], function(data) {
+    browser.storage.sync.get(['tasks', 'defaultDays']).then((data) => {
         const { tasks, defaultDays } = data;
         if ((Array.isArray(tasks), Array.isArray(defaultDays))) {
             const tableData = [];
@@ -82,17 +82,12 @@ function getTimeSheetHours(func) {
 
 function generateTimeSheetHours() {
     getTimeSheetHours(timeSheetHours => {
-        chrome.tabs.query({ active: true }, function(tabs) {
+        browser.tabs.query({ active: true }).then((tabs) => {
             // Send a request to the content script.
             const tab = tabs.find(e => e.title === 'Edit Time Sheet');
-            chrome.tabs.sendMessage(
-                tab.id,
-                { action: 'setHours', timeSheetHours },
-                {},
-                function() {
-                    window.close();
-                }
-            );
+            browser.tabs.sendMessage(tab.id, { action: 'setHours', timeSheetHours }, {}).then(() => {
+                window.close()
+            });
         });
     });
 }

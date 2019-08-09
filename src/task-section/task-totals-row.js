@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 class TaskTotalsRow extends Component {
     render() {
         const { tasks } = this.props;
-        const total = tasks.reduce((sum, { ratio }) => sum + parseFloat(ratio), 0);
+        const total = tasks.reduce((sum, { ratio }) => sum + parseFloat(ratio || 0), 0);
         return <tr>
             <td />
             <td className="task-total-row">
@@ -21,7 +21,7 @@ class TaskTotalsRow extends Component {
                     type="text"
                     className="form-control"
                     id="inputTaskTotal"
-                    value={total}
+                    value={total.toFixed(2)}
                     disabled
                 />
             </td>

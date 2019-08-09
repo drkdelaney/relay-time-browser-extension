@@ -19,9 +19,9 @@ class TaskTable extends Component {
     }
 
     handleNewTask = newTask => {
-        update('tasks', ({ tasks = [] }) => {
-            return [...tasks, newTask];
-        }).then(({ tasks }) => {
+        update('tasks', ({ tasks = [] }) => (
+            [...tasks, newTask]
+        )).then(({ tasks }) => {
             this.setState({ tasks });
         });
     };
@@ -71,7 +71,7 @@ class TaskTable extends Component {
     handleDragEnter = (e) => {
         e.preventDefault();
     };
-    
+
     handleDragLeave = () => {
         this.setState({ dragOverId: null });
     };
