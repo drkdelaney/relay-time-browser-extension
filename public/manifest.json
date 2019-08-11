@@ -33,5 +33,14 @@
     },
     "homepage_url": "https://github.com/derekedelaney/relay-time-browser-extension",
     "manifest_version": 2,
-    "content_security_policy": "script-src 'self' 'sha256-5As4+3YpY62+l38PsxCEkjB1R4YtyktBtRScTJ3fyLU='; object-src 'self'"
+    "content_security_policy": "script-src 'self' 'sha256-5As4+3YpY62+l38PsxCEkjB1R4YtyktBtRScTJ3fyLU='; object-src 'self'",
+    "addons": {
+        "{36064443-07a4-49c8-9fc4-715398b47824}": {
+          "updates": [
+            { "version": "1.2.0",
+              "update_link": "https://github.com/derekedelaney/relay-time-browser-extension/relay_time-1.2.0-fx.xpi"
+            }
+          ]
+        }
+      }
 }
