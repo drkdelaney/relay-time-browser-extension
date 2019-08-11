@@ -38,7 +38,7 @@
         "{36064443-07a4-49c8-9fc4-715398b47824}": {
           "updates": [
             { "version": "1.2.0",
-              "update_link": "https://github.com/derekedelaney/relay-time-browser-extension/relay_time-1.2.0-fx.xpi"
+              "update_link": "https://github.com/derekedelaney/relay-time-browser-extension/blob/master/relay_time-1.2.0-fx.xpi"
             }
           ]
         }
