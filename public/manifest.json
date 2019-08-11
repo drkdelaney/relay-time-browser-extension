@@ -1,6 +1,6 @@
 {
     "name": "Relay Time",
-    "version": "1.2.0",
+    "version": "1.2.1",
     "description": "Enters your time in the relay time sheet",
     "permissions": ["storage", "activeTab", "tabs", "alarms", "notifications"],
     "background": {
@@ -38,7 +38,10 @@
         "{36064443-07a4-49c8-9fc4-715398b47824}": {
           "updates": [
             { "version": "1.2.0",
-              "update_link": "https://raw.githubusercontent.com/derekedelaney/relay-time-browser-extension/master/relay_time-1.2.0-fx.xpi"
+              "update_link": "https://github.com/derekedelaney/relay-time-browser-extension/releases/download/1.2.0/relay_time-1.2.0-fx.xpi"
+            },
+            { "version": "1.2.1",
+              "update_link": "https://github.com/derekedelaney/relay-time-browser-extension/releases/download/1.2.1/relay_time-1.2.1-fx.xpi"
             }
           ]
         }
