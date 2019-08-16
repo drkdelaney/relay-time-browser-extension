@@ -55,11 +55,15 @@ function hourChange() {
     document.getElementById('total-time').innerText = total;
 }
 
-function getTimeSheetHours(func) {
+async function getTimeSheetHours() {
     const hours = document.querySelectorAll('.hours');
-    browser.storage.sync.get(['tasks', 'defaultDays']).then((data) => {
-        const { tasks, defaultDays } = data;
-        if ((Array.isArray(tasks), Array.isArray(defaultDays))) {
+    const data = await browser.storage.sync.get(['tasks', 'defaultDays']);
+    const { tasks, defaultDays } = data;
+    return new Promise((resolve, reject) => {
+        if (!Array.isArray(tasks) || tasks.length < 1) {
+            reject('No tasks found');
+        }
+        if ((Array.isArray(tasks) && Array.isArray(defaultDays))) {
             const tableData = [];
             for (const task of tasks) {
                 const row = [];
@@ -73,21 +77,24 @@ function getTimeSheetHours(func) {
                 }
                 tableData.push(row.join('\\t'));
             }
-            func(tableData.join('\\n'));
+            resolve(tableData.join('\\n'));
         } else {
-            console.error('Could not generate time sheet hours');
+            reject('Could not generate time sheet hours');
         }
     });
 }
 
-function generateTimeSheetHours() {
-    getTimeSheetHours(timeSheetHours => {
-        browser.tabs.query({ active: true }).then((tabs) => {
+async function generateTimeSheetHours() {
+    try {
+        const timeSheetHours = await getTimeSheetHours();
+        browser.tabs.query({ currentWindow: true, active: true }).then((tabs) => {
             // Send a request to the content script.
-            const tab = tabs.find(e => e.title === 'Edit Time Sheet');
-            browser.tabs.sendMessage(tab.id, { action: 'setHours', timeSheetHours }, {}).then(() => {
+            browser.tabs.sendMessage(tabs[0].id, { action: 'setHours', timeSheetHours }).then(() => {
                 window.close()
             });
         });
-    });
+    } catch(error) {
+        console.error(error);
+    }
+
 }

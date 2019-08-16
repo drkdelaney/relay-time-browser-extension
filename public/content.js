@@ -1,12 +1,14 @@
 /* global browser */
 
-browser.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    if (message.action === 'setHours') {
-        if (message.timeSheetHours) {
-            setTimeSheetHours(message.timeSheetHours);
+browser.runtime.onMessage.addListener((message) => {
+    return new Promise((resolve) => {
+        if (message.action === 'setHours') {
+            if (message.timeSheetHours) {
+                setTimeSheetHours(message.timeSheetHours);
+            }
+            resolve();
         }
-        sendResponse();
-    }
+    });
 });
 
 function setTimeSheetHours(timeSheetHours = '') {

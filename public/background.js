@@ -57,6 +57,8 @@ browser.runtime.onInstalled.addListener(({ reason }) => {
     });
 });
 
+browser.pageAction.onClicked.addListener();
+
 browser.alarms.onAlarm.addListener(alarm => {
     showNotification();
 });
