@@ -1,9 +1,9 @@
-/* global browser */
+/*global chrome*/
 
 const doneButton = document.getElementById('done-button');
 doneButton.onclick = generateTimeSheetHours;
 
-browser.storage.sync.get('tasks').then((data) => {
+chrome.storage.sync.get('tasks', function(data) {
     if (Array.isArray(data.tasks)) {
         doneButton.disabled = false;
     } else {
@@ -11,7 +11,7 @@ browser.storage.sync.get('tasks').then((data) => {
     }
 });
 
-browser.storage.sync.get('defaultDays').then((data) => {
+chrome.storage.sync.get('defaultDays', function(data) {
     if (Array.isArray(data.defaultDays)) {
         populateDefaultDays(data.defaultDays);
     } else {
@@ -39,7 +39,7 @@ function populateDefaultDays(defaultDays = []) {
         },
         0
     );
-    // set callbacks to calc totals
+    // set calbacks to calc totals
     const hourElements = document.querySelectorAll('.hours');
     for (const element of hourElements) {
         element.onkeyup = hourChange;
@@ -55,15 +55,11 @@ function hourChange() {
     document.getElementById('total-time').innerText = total;
 }
 
-async function getTimeSheetHours() {
+function getTimeSheetHours(func) {
     const hours = document.querySelectorAll('.hours');
-    const data = await browser.storage.sync.get(['tasks', 'defaultDays']);
-    const { tasks, defaultDays } = data;
-    return new Promise((resolve, reject) => {
-        if (!Array.isArray(tasks) || tasks.length < 1) {
-            reject('No tasks found');
-        }
-        if ((Array.isArray(tasks) && Array.isArray(defaultDays))) {
+    chrome.storage.sync.get(['tasks', 'defaultDays'], function(data) {
+        const { tasks, defaultDays } = data;
+        if ((Array.isArray(tasks), Array.isArray(defaultDays))) {
             const tableData = [];
             for (const task of tasks) {
                 const row = [];
@@ -77,24 +73,26 @@ async function getTimeSheetHours() {
                 }
                 tableData.push(row.join('\\t'));
             }
-            resolve(tableData.join('\\n'));
+            func(tableData.join('\\n'));
         } else {
-            reject('Could not generate time sheet hours');
+            console.error('Could not generate time sheet hours');
         }
     });
 }
 
-async function generateTimeSheetHours() {
-    try {
-        const timeSheetHours = await getTimeSheetHours();
-        browser.tabs.query({ currentWindow: true, active: true }).then((tabs) => {
+function generateTimeSheetHours() {
+    getTimeSheetHours(timeSheetHours => {
+        chrome.tabs.query({ active: true }, function(tabs) {
             // Send a request to the content script.
-            browser.tabs.sendMessage(tabs[0].id, { action: 'setHours', timeSheetHours }).then(() => {
-                window.close()
-            });
+            const tab = tabs.find(e => e.title === 'Edit Time Sheet');
+            chrome.tabs.sendMessage(
+                tab.id,
+                { action: 'setHours', timeSheetHours },
+                {},
+                function() {
+                    window.close();
+                }
+            );
         });
-    } catch(error) {
-        console.error(error);
-    }
-
+    });
 }

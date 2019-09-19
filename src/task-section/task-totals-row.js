@@ -1,10 +1,9 @@
-import React, { Component } from 'react';
+import React from 'react';
 
-class TaskTotalsRow extends Component {
-    render() {
-        const { tasks } = this.props;
-        const total = tasks.reduce((sum, { ratio }) => sum + parseFloat(ratio || 0), 0);
-        return <tr>
+function TaskTotalsRow({ tasks }) {
+    const total = tasks.reduce((sum, { ratio }) => sum + parseFloat(ratio || 0), 0);
+    return (
+        <tr>
             <td />
             <td className="task-total-row">
                 <input
@@ -27,7 +26,7 @@ class TaskTotalsRow extends Component {
             </td>
             <td />
         </tr>
-    }
+    );
 }
 
 export default TaskTotalsRow;
