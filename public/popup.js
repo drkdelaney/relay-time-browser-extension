@@ -1,13 +1,15 @@
 /*global chrome*/
 
-const doneButton = document.getElementById('done-button');
-doneButton.onclick = generateTimeSheetHours;
+const saveButton = document.getElementById('save-button');
+const saveAndSubmitButton = document.getElementById('save-and-submit-button');
+saveButton.onclick = generateTimeSheetHours.bind(null, 'SAVE');
+saveAndSubmitButton.onclick = generateTimeSheetHours.bind(null, 'SAVE_SUBMIT');
 
 chrome.storage.sync.get('tasks', function(data) {
     if (Array.isArray(data.tasks)) {
-        doneButton.disabled = false;
+        saveButton.disabled = false;
     } else {
-        doneButton.disabled = true;
+        saveButton.disabled = true;
     }
 });
 
@@ -21,16 +23,12 @@ chrome.storage.sync.get('defaultDays', function(data) {
 
 function populateDefaultDays(defaultDays = []) {
     document.getElementById('day-row').innerHTML = defaultDays
-        .map(obj => (obj.checked ? `<th>${obj.day}</th>` : ''))
+        .map(obj => `<th>${obj.day}</th>`)
         .join('\n');
     document.getElementById('value-row').innerHTML = defaultDays
         .map(
             obj =>
-                obj.checked
-                    ? `<td><input class="form-control form-control-sm hours" type="text" value="${
-                          obj.value
-                      }"></td>`
-                    : ''
+                `<td><input class="form-control form-control-sm hours" type="text" value="${obj.value}"></td>`
         )
         .join('\n');
     document.getElementById('total-time').innerText = defaultDays.reduce(
@@ -64,12 +62,8 @@ function getTimeSheetHours(func) {
             for (const task of tasks) {
                 const row = [];
                 for (let i = 0, j = 0; i < defaultDays.length; i++) {
-                    if (defaultDays[i].checked) {
-                        row.push(task.ratio * hours[j].value);
-                        j++;
-                    } else {
-                        row.push(0);
-                    }
+                    row.push(task.ratio * hours[j].value);
+                    j++;
                 }
                 tableData.push(row.join('\\t'));
             }
@@ -80,14 +74,14 @@ function getTimeSheetHours(func) {
     });
 }
 
-function generateTimeSheetHours() {
+function generateTimeSheetHours(eventType) {
     getTimeSheetHours(timeSheetHours => {
         chrome.tabs.query({ active: true }, function(tabs) {
             // Send a request to the content script.
             const tab = tabs.find(e => e.title === 'Edit Time Sheet');
             chrome.tabs.sendMessage(
                 tab.id,
-                { action: 'setHours', timeSheetHours },
+                { action: 'setHours', timeSheetHours, eventType },
                 {},
                 function() {
                     window.close();

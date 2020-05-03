@@ -5,13 +5,13 @@ const NOTIFICATION_DAY = 5;
 
 const defaultTasks = [];
 const defaultDefaults = [
-    { day: 'Mon', value: '8', checked: true },
-    { day: 'Tue', value: '8', checked: true },
-    { day: 'Wed', value: '8', checked: true },
-    { day: 'Thu', value: '8', checked: true },
-    { day: 'Fri', value: '8', checked: true },
-    { day: 'Sat', value: '0', checked: true },
-    { day: 'Sun', value: '0', checked: true },
+    { day: 'Mon', value: '8' },
+    { day: 'Tue', value: '8' },
+    { day: 'Wed', value: '8' },
+    { day: 'Thu', value: '8' },
+    { day: 'Fri', value: '8' },
+    { day: 'Sat', value: '0' },
+    { day: 'Sun', value: '0' },
 ];
 const defaultNotifications = true;
 const defaultNotificationTime = '11:00';
@@ -49,6 +49,7 @@ chrome.runtime.onInstalled.addListener(({ reason }) => {
             });
     } else if (reason === 'update') {
         chrome.alarms.clearAll();
+        goToWhatsNew();
     }
 
     chrome.storage.sync.get('notificationTime', ({ notificationTime }) => {
@@ -61,8 +62,53 @@ chrome.runtime.onInstalled.addListener(({ reason }) => {
     });
 });
 
+chrome.contextMenus.create({
+    id: 'OPEN_DASHBOARD',
+    title: 'Open Dashboard',
+    contexts: ['page_action'],
+    type: 'normal',
+});
+chrome.contextMenus.create({
+    id: 'SETTINGS',
+    title: 'Settings',
+    contexts: ['page_action'],
+    type: 'normal',
+});
+chrome.contextMenus.create({
+    id: 'WHATS_NEW',
+    title: 'What\'s New',
+    contexts: ['page_action'],
+    type: 'normal',
+});
+chrome.contextMenus.create({
+    id: 'VIEW_SOURCE',
+    title: 'View Source',
+    contexts: ['page_action'],
+    type: 'normal',
+});
+chrome.contextMenus.onClicked.addListener(info => {
+    switch (info.menuItemId) {
+        case 'OPEN_DASHBOARD':
+            goToDashboard();
+            break;
+        case 'SETTINGS':
+            chrome.runtime.openOptionsPage();
+            break;
+        case 'WHATS_NEW':
+            goToWhatsNew();
+            break;
+        case 'VIEW_SOURCE':
+            goToGithub();
+            break;
+        default:
+            break;
+    }
+});
+
 chrome.alarms.onAlarm.addListener(alarm => {
-    showNotification();
+    if(alarm.name === TIME_SHEET_REMINDER) {
+        showNotification();
+    }
 });
 
 chrome.notifications.onClicked.addListener(notificationId => {
@@ -96,6 +142,18 @@ function createWeeklyAlarm(day, hour, minute = 0) {
 
 function goToRelay() {
     chrome.tabs.create({ url: 'https://ppm-nike.saas.microfocus.com/' });
+}
+
+function goToDashboard() {
+    chrome.tabs.create({ url: 'https://ppm-nike.saas.microfocus.com/itg/dashboard/app/portal/PageView.jsp' });
+}
+
+function goToWhatsNew() {
+    chrome.tabs.create({ url: '/index.html?whatsNew=true' });
+}
+
+function goToGithub() {
+    chrome.tabs.create({ url: 'https://github.com/derekedelaney/relay-time-browser-extension/tree/chrome' });
 }
 
 function showNotification() {

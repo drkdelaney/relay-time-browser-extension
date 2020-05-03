@@ -11,6 +11,11 @@
         .table th {
             border-top: none;
         }
+        .bottom-row {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 8px;
+        }
     </style>
 </head>
 
@@ -34,9 +39,10 @@
                 </tr>
             </tbody>
         </table>
-        <div class="container d-flex justify-content-between">
-            <h6>Total: <span id="total-time"></span></h2>
-            <button id="done-button" type="button" class="btn btn-primary btn-sm">Save</button>
+        <div class="bottom-row">
+            <h6>Total: <span id="total-time"></span></h6>
+            <button id="save-button" type="button" class="btn btn-primary btn-sm">Save</button>
+            <button id="save-and-submit-button" type="button" class="btn btn-primary btn-sm">Save & Submit</button>
         </div>
     </div>
     <script src="popup.js"></script>
