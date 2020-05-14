@@ -19,7 +19,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "zip": "zip -r -X ./relay-time-1.2.3.zip ./build"
+    "zip": "zip -r -X ./relay-time-$npm_package_version.zip ./build",
+    "app-version": "echo $npm_package_version"
   },
   "eslintConfig": {
     "extends": "react-app"

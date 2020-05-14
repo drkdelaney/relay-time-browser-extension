@@ -80,6 +80,7 @@ table {
 
 .grip-row-button {
     vertical-align: middle !important;
+    cursor: grab;
 }
 
 .dragon-drop {
