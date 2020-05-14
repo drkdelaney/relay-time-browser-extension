@@ -1,53 +1,58 @@
-/* global browser */
+/* global chrome */
 
 const TIME_SHEET_REMINDER = 'TIME_SHEET_REMINDER';
 const NOTIFICATION_DAY = 5;
 
 const defaultTasks = [];
 const defaultDefaults = [
-    { day: 'Mon', value: '8', checked: true },
-    { day: 'Tue', value: '8', checked: true },
-    { day: 'Wed', value: '8', checked: true },
-    { day: 'Thu', value: '8', checked: true },
-    { day: 'Fri', value: '8', checked: true },
-    { day: 'Sat', value: '0', checked: true },
-    { day: 'Sun', value: '0', checked: true },
+    { day: 'Mon', value: '8' },
+    { day: 'Tue', value: '8' },
+    { day: 'Wed', value: '8' },
+    { day: 'Thu', value: '8' },
+    { day: 'Fri', value: '8' },
+    { day: 'Sat', value: '0' },
+    { day: 'Sun', value: '0' },
 ];
 const defaultNotifications = true;
 const defaultNotificationTime = '11:00';
 
-browser.runtime.onInstalled.addListener(({ reason }) => {
-    browser.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
-        if (tab.url.match('ppm-nike.saas.microfocus.com')) {
-            browser.pageAction.show(tabId);
-        } else {
-            browser.pageAction.hide(tabId);
-        }
+chrome.runtime.onInstalled.addListener(({ reason }) => {
+    chrome.declarativeContent.onPageChanged.removeRules(undefined, function() {
+        chrome.declarativeContent.onPageChanged.addRules([
+            {
+                conditions: [
+                    new chrome.declarativeContent.PageStateMatcher({
+                        pageUrl: {
+                            hostEquals: 'ppm-nike.saas.microfocus.com',
+                        },
+                    }),
+                ],
+                actions: [
+                    new chrome.declarativeContent.ShowPageAction(),
+                ],
+            },
+        ]);
     });
 
     if (reason === 'install') {
-        browser.storage.sync.get('tasks').then(results => {
-            if (!results || !Array.isArray(results.tasks)) {
-                browser.storage.sync.set({
-                    tasks: defaultTasks,
-                    defaultDays: defaultDefaults,
-                    notifications: defaultNotifications,
-                    notificationTime: defaultNotificationTime,
-                });
-            }
-        }).catch(() => {
-            browser.storage.sync.set({
-                tasks: defaultTasks,
-                defaultDays: defaultDefaults,
-                notifications: defaultNotifications,
-                notificationTime: defaultNotificationTime,
+        chrome.storage.sync.get('tasks',
+            data => {
+                if (!data || !Array.isArray(data.tasks)) {
+                    chrome.storage.sync.set({
+                        tasks: defaultTasks,
+                        defaultDays: defaultDefaults,
+                        notifications: defaultNotifications,
+                        notificationTime: defaultNotificationTime,
+                    });
+                }
+                chrome.runtime.openOptionsPage();
             });
-        });
-        browser.runtime.openOptionsPage();
     } else if (reason === 'update') {
-        browser.alarms.clearAll();
+        chrome.alarms.clearAll();
+        goToWhatsNew();
     }
-    browser.storage.sync.get('notificationTime').then(({ notificationTime }) => {
+
+    chrome.storage.sync.get('notificationTime', ({ notificationTime }) => {
         if (notificationTime) {
             const [hour, minute] = notificationTime.split(':');
             createWeeklyAlarm(NOTIFICATION_DAY, hour, minute);
@@ -57,43 +62,98 @@ browser.runtime.onInstalled.addListener(({ reason }) => {
     });
 });
 
-browser.pageAction.onClicked.addListener();
-
-browser.alarms.onAlarm.addListener(alarm => {
-    showNotification();
+chrome.contextMenus.create({
+    id: 'OPEN_DASHBOARD',
+    title: 'Open Dashboard',
+    contexts: ['page_action'],
+    type: 'normal',
+});
+chrome.contextMenus.create({
+    id: 'SETTINGS',
+    title: 'Settings',
+    contexts: ['page_action'],
+    type: 'normal',
+});
+chrome.contextMenus.create({
+    id: 'WHATS_NEW',
+    title: 'What\'s New',
+    contexts: ['page_action'],
+    type: 'normal',
+});
+chrome.contextMenus.create({
+    id: 'VIEW_SOURCE',
+    title: 'View Source',
+    contexts: ['page_action'],
+    type: 'normal',
+});
+chrome.contextMenus.onClicked.addListener(info => {
+    switch (info.menuItemId) {
+        case 'OPEN_DASHBOARD':
+            goToDashboard();
+            break;
+        case 'SETTINGS':
+            chrome.runtime.openOptionsPage();
+            break;
+        case 'WHATS_NEW':
+            goToWhatsNew();
+            break;
+        case 'VIEW_SOURCE':
+            goToGithub();
+            break;
+        default:
+            break;
+    }
 });
 
-browser.notifications.onClicked.addListener(notificationId => {
+chrome.alarms.onAlarm.addListener(alarm => {
+    if(alarm.name === TIME_SHEET_REMINDER) {
+        showNotification();
+    }
+});
+
+chrome.notifications.onClicked.addListener(notificationId => {
     goToRelay();
-    browser.notifications.clear(notificationId);
+    chrome.notifications.clear(notificationId);
 });
 
-browser.notifications.onClosed.addListener((notificationId, byUser) => {
-    browser.notifications.clear(notificationId);
+chrome.notifications.onClosed.addListener((notificationId, byUser) => {
+    chrome.notifications.clear(notificationId);
 });
 
-browser.storage.onChanged.addListener(
+chrome.storage.onChanged.addListener(
     ({ notificationTime = {}, notifications = {} }) => {
         if (notificationTime.newValue) {
-            browser.alarms.clearAll();
+            chrome.alarms.clearAll();
             const [hour, minute] = notificationTime.newValue.split(':');
             createWeeklyAlarm(NOTIFICATION_DAY, hour, minute);
         }
         if (notifications.newValue === false) {
-            browser.alarms.clearAll();
+            chrome.alarms.clearAll();
         }
     }
 );
 
 function createWeeklyAlarm(day, hour, minute = 0) {
-    browser.alarms.create(TIME_SHEET_REMINDER, {
+    chrome.alarms.create(TIME_SHEET_REMINDER, {
         periodInMinutes: 10080,
         when: nextOccurrenceOfDayAndTime(day, hour, minute).getTime(),
     });
 }
 
 function goToRelay() {
-    browser.tabs.create({ url: 'https://ppm-nike.saas.microfocus.com/' });
+    chrome.tabs.create({ url: 'https://ppm-nike.saas.microfocus.com/' });
+}
+
+function goToDashboard() {
+    chrome.tabs.create({ url: 'https://ppm-nike.saas.microfocus.com/itg/dashboard/app/portal/PageView.jsp' });
+}
+
+function goToWhatsNew() {
+    chrome.tabs.create({ url: '/index.html?whatsNew=true' });
+}
+
+function goToGithub() {
+    chrome.tabs.create({ url: 'https://github.com/derekedelaney/relay-time-browser-extension/tree/chrome' });
 }
 
 function showNotification() {
@@ -104,7 +164,7 @@ function showNotification() {
         message: "Don't forget to submit your time sheet!",
         requireInteraction: true,
     };
-    browser.notifications.create('reminder', notificationOptions);
+    chrome.notifications.create('reminder', notificationOptions);
 }
 
 function nextOccurrenceOfDayAndTime(dayOfWeek, hour, minute) {

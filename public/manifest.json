@@ -1,19 +1,17 @@
 {
     "name": "Relay Time",
-    "version": "1.2.1",
+    "version": "1.3.0",
     "description": "Enters your time in the relay time sheet",
-    "permissions": ["storage", "activeTab", "tabs", "alarms", "notifications"],
+    "permissions": ["declarativeContent", "storage", "activeTab", "alarms", "notifications", "contextMenus"],
     "background": {
-        "scripts": ["browser-polyfill.min.js", "background.js"]
+        "scripts": ["background.js"],
+        "persistent": false
     },
-    "options_ui": {
-        "page": "index.html",
-        "open_in_tab": true
-    },
+    "options_page": "index.html",
     "content_scripts": [
         {
             "matches": ["https://ppm-nike.saas.microfocus.com/*"],
-            "js": ["browser-polyfill.min.js", "content.js"]
+            "js": ["content.js"]
         }
     ],
     "page_action": {
@@ -23,7 +21,8 @@
             "32": "images/relay_time_icon32.png",
             "48": "images/relay_time_icon48.png",
             "128": "images/relay_time_icon128.png"
-        }
+        },
+        "title": "Relay Time"
     },
     "icons": {
         "16": "images/relay_time_icon16.png",
@@ -31,19 +30,7 @@
         "48": "images/relay_time_icon48.png",
         "128": "images/relay_time_icon128.png"
     },
-    "homepage_url": "https://github.com/derekedelaney/relay-time-browser-extension",
+    "homepage_url": "https://ppm-nike.saas.microfocus.com/itg/dashboard/app/portal/PageView.jsp",
     "manifest_version": 2,
-    "content_security_policy": "script-src 'self' 'sha256-5As4+3YpY62+l38PsxCEkjB1R4YtyktBtRScTJ3fyLU='; object-src 'self'",
-    "addons": {
-        "{36064443-07a4-49c8-9fc4-715398b47824}": {
-          "updates": [
-            { "version": "1.2.0",
-              "update_link": "https://github.com/derekedelaney/relay-time-browser-extension/releases/download/1.2.0/relay_time-1.2.0-fx.xpi"
-            },
-            { "version": "1.2.1",
-              "update_link": "https://github.com/derekedelaney/relay-time-browser-extension/releases/download/1.2.1/relay_time-1.2.1-fx.xpi"
-            }
-          ]
-        }
-      }
+    "content_security_policy": "script-src 'self' 'sha256-6HnEG4jwQ5o5yhzlNfVYIAoGK5aZt9y6fKNVC/I+kFs='; object-src 'self'"
 }
